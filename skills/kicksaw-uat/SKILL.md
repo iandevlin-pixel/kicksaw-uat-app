@@ -98,8 +98,12 @@ Setup asks for or discovers everything a project has to supply:
       sf project deploy quick -o <alias> --job-id <validated id> --wait 30
       ```
       If validation fails, report the errors and stop; nothing was changed.
-   7. **First install only:** deploy the settings records (they're blank; setup fills them next):
-      `sf project deploy start -o <alias> --manifest manifest/first-install.xml --wait 10`. On an upgrade, never.
+   7. **First install only:** deploy the settings records that don't exist yet (they're blank; setup fills them
+      next). Check first: `sf data query -o <alias> -q "SELECT DeveloperName FROM Kicksaw_UAT_Setting__mdt"`. An org
+      that had v1 usually already has `UAT_Settings`: deploy only `Default` then
+      (`sf project deploy start -o <alias> -m "CustomMetadata:Kicksaw_UAT_Setting.Default"`), otherwise
+      `--manifest manifest/first-install.xml`. Never redeploy a record that exists, and never on an upgrade.
+      If v1 was installed, its flows are already active: the deploy activates the fixed versions shipped here.
    8. **Upgrade only:** for each release newer than the org's stamp, if `release/<tag>/destructiveChanges.xml` lists
       anything, show it, ask, then deploy it (`sf project deploy start -o <alias> --manifest <empty package.xml>
       --post-destructive-changes release/<tag>/destructiveChanges.xml`).

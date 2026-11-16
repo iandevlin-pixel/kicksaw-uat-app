@@ -10,6 +10,10 @@
         <connector>
             <targetReference>Send_Email</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Send_Email</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>customNotifTypeId</name>
@@ -50,6 +54,9 @@
         <locationY>1000</locationY>
         <actionName>emailSimple</actionName>
         <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Notification_Not_Sent</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>recipientId</name>
@@ -78,6 +85,20 @@
         <nameSegment>emailSimple</nameSegment>
     </actionCalls>
     <apiVersion>62.0</apiVersion>
+    <assignments>
+        <description>A notification problem (e.g. the only recipient is the person saving) must never block saving the item.</description>
+        <name>Notification_Not_Sent</name>
+        <label>Notification Not Sent</label>
+        <locationX>440</locationX>
+        <locationY>1108</locationY>
+        <assignmentItems>
+            <assignToReference>varNotificationFailed</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
     <assignments>
         <name>Add_Recipient</name>
         <label>Add Recipient</label>
@@ -267,6 +288,16 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
+    <variables>
+        <name>varNotificationFailed</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
     <variables>
         <name>varChannel</name>
         <dataType>String</dataType>

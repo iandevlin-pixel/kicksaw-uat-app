@@ -59,9 +59,9 @@
         </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
-            <name>recipientId</name>
+            <name>emailAddresses</name>
             <value>
-                <elementReference>fxRecipient</elementReference>
+                <elementReference>fxRecipientEmail</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -131,6 +131,13 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>fxRecipientEmail</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Send_Email_Action</targetReference>
             </connector>
@@ -183,6 +190,12 @@
         <name>fxRecipient</name>
         <dataType>String</dataType>
         <expression>IF(ISBLANK({!$Record.SubmittedBy__c}), {!$Record.CreatedById}, {!$Record.SubmittedBy__c})</expression>
+    </formulas>
+    <formulas>
+        <description>The tester's email: Submitted By, else the creator.</description>
+        <name>fxRecipientEmail</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!$Record.SubmittedBy__c}), {!$Record.CreatedBy.Email}, {!$Record.SubmittedBy__r.Email})</expression>
     </formulas>
     <formulas>
         <name>fxRecordLink</name>

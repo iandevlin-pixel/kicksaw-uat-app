@@ -1,6 +1,6 @@
 # Kicksaw UAT Testing Application
 
-> **Kicksaw UAT App 0.3.1 (UAT App v2).** Source of truth for installs is the tagged release in
+> **Kicksaw UAT App 0.3.2 (UAT App v2).** Source of truth for installs is the tagged release in
 > [iandevlin-pixel/kicksaw-uat-app](https://github.com/iandevlin-pixel/kicksaw-uat-app), based on Kicksaw's original
 > repo [Kicksaw-Consulting/internal-uat-application](https://github.com/Kicksaw-Consulting/internal-uat-application)
 > (v1 and its install links live there, unchanged). Install with the `kicksaw-uat` skill (see "Install UAT App v2").
@@ -51,6 +51,7 @@ data migration): fields `Claude_Proposed_Resolution__c`, `Claude_Classification_
 external credential `Claude_UAT_Triage` (principal `Claude_Principal`); external service `ClaudeUATTriage`; flow element
 `Set_Has_Claude_Proposal`. The triage skill works from Claude Code or Codex (`AGENTS.md` / `CLAUDE.md` point to it).
 
+**Version 0.3.2 (Nov 2026):** tester notifications: email by address and skipped when there is none (no flow error emails); setup sets the channel (App).
 **Version 0.3.1 (Nov 2026):** two flow fixes found installing over v1 (Test Run - After Save, UAT Feedback - Notify Tester).
 **Version 0.3 (Nov 2026):** UAT Review fills the window, auto-growing text boxes, Back / Skip / Next (saves) with
 ← / S / →, mouse-wheel flipping, severity on the card; skill setup asks who tests and who reviews; AGENTS.md for Codex.

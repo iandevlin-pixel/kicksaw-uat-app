@@ -124,6 +124,10 @@ Setup asks for or discovers everything a project has to supply:
    - `Status_Mapping__c`: map the project's Jira statuses to UAT statuses, e.g.
      `New,Build Ready,In Progress,On Hold,Ready for QA=In Progress; Done=Ready for Retest`
    - `UAT_Label__c` (`UAT`), `Subtask_Prefix__c` (`UAT -`), `Triage_Schedule__c` (start with `Manual`)
+   - `New_Test_Run_Notification_Settings__c`: how testers hear about Needs Info, Ready for Retest and closed items:
+     `App` (bell notification, the default to use), `Email` or `Both`. Always set it: left out of the settings file,
+     the field's default is `Email`, and then testers get no bell. Email needs the sandbox's deliverability set to
+     All email.
 3. **Access: ask, don't assume.** Find out who tests and who reviews, then assign the permission sets.
    1. List the active people in the org (and who already has the app):
       ```bash

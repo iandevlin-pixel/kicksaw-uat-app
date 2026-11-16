@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UAT_Jira_Failed</fullName>
+    <columns>NAME</columns>
+    <columns>Type__c</columns>
+    <columns>Priority__c</columns>
+    <columns>Status__c</columns>
+    <columns>Jira_Sync_Status__c</columns>
+    <columns>Jira_Requested_At__c</columns>
+    <columns>JIRA_Ticket_URL__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Jira_Sync_Status__c</field>
+        <operation>equals</operation>
+        <value>Failed</value>
+    </filters>
+    <label>UAT - Jira Failed</label>
+</ListView>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Has_Claude_Proposal__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Set automatically by flow UAT_Feedback_Before_Save (Proposed Resolution is not blank). Formula fields cannot reference Long Text Area fields.</description>
+    <label>Has Proposed Resolution</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

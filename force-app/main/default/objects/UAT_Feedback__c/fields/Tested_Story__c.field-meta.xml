@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tested_Story__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The story the tester was testing. Picked on the feedback form; fills Tested Story (Jira) on save.</description>
+    <inlineHelpText>The story from your test scenario.</inlineHelpText>
+    <label>Tested Story</label>
+    <referenceTo>UAT_Story__c</referenceTo>
+    <relationshipLabel>UAT Feedback</relationshipLabel>
+    <relationshipName>UAT_Feedback</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

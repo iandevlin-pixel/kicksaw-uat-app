@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UAT_Closed</fullName>
+    <columns>NAME</columns>
+    <columns>Type__c</columns>
+    <columns>Priority__c</columns>
+    <columns>Status__c</columns>
+    <columns>Tested_Story_Jira__c</columns>
+    <columns>Kicksaw_Determination__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Resolved,Not a Bug,Duplicate,Won&apos;t Do</value>
+    </filters>
+    <label>UAT - Closed</label>
+</ListView>

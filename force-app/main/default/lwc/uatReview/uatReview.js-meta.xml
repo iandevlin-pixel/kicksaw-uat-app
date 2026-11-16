@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Kicksaw UAT App v2: review UAT feedback one item at a time and decide whether each becomes a Jira ticket.</description>
+    <isExposed>true</isExposed>
+    <masterLabel>UAT Review</masterLabel>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+</LightningComponentBundle>

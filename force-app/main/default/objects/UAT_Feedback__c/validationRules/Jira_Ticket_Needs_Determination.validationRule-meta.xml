@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Jira_Ticket_Needs_Determination</fullName>
+    <active>true</active>
+    <errorConditionFormula>Needs_Jira_Ticket__c &amp;&amp; NOT(OR(ISPICKVAL(Kicksaw_Determination__c,&quot;Bug&quot;),ISPICKVAL(Kicksaw_Determination__c,&quot;Enhancement&quot;)))</errorConditionFormula>
+    <errorDisplayField>Needs_Jira_Ticket__c</errorDisplayField>
+    <errorMessage>Only a Bug or Enhancement can get a Jira ticket.</errorMessage>
+</ValidationRule>

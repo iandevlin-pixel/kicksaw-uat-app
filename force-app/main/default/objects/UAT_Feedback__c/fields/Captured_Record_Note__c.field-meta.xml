@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Captured_Record_Note__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(RecordURL__c), &quot;No record captured (submitted from a list view or home page)&quot;, ObjectName__c &amp; &quot; &quot; &amp; RecordURL__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Captured Record</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

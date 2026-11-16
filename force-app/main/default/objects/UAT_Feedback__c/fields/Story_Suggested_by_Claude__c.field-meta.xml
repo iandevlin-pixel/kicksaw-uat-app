@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Story_Suggested_by_Claude__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Ticked when triage filled Tested Story during triage (the tester didn't pick one). The Kicksaw reviewer confirms or changes it on UAT Review; changing it clears this box.</description>
+    <inlineHelpText>Triage matched this story from the feedback and the story's acceptance criteria. Check it before sending to Jira.</inlineHelpText>
+    <label>Story Suggested by Triage</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>UAT_Feedback__c.Days_Open__c</field>
+    </columns>
+    <columns>
+        <field>UAT_Feedback__c.Type__c</field>
+    </columns>
+    <columns>
+        <field>UAT_Feedback__c.Priority__c</field>
+    </columns>
+    <columns>
+        <field>UAT_Feedback__c.Status__c</field>
+    </columns>
+    <columns>
+        <field>UAT_Feedback__c.Tested_Story_Jira__c</field>
+    </columns>
+    <columns>
+        <field>CUST_CREATED_DATE</field>
+    </columns>
+    <description>UAT v2</description>
+    <filter>
+        <criteriaItems>
+            <column>UAT_Feedback__c.Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>New</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>UAT - Aging</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$UAT_Feedback__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <sortColumn>UAT_Feedback__c.Days_Open__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

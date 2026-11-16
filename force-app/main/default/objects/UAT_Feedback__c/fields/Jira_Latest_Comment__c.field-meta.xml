@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Jira_Latest_Comment__c</fullName>
+    <description>The latest comment on the Jira ticket (author, date and text), copied back by the triage skill's status sync so testers and reviewers see it without opening Jira.</description>
+    <label>Jira Latest Comment</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

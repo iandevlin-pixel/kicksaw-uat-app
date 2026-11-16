@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <decisions>
+        <name>Which_Request</name>
+        <label>Which request?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Nothing to do</defaultConnectorLabel>
+        <rules>
+            <name>Manual_Jira_Tick</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>fxManualJira</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Stamp_Jira_Requested</targetReference>
+            </connector>
+            <label>Needs Jira Ticket ticked by hand</label>
+        </rules>
+        <rules>
+            <name>Tester_Added_Info</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Description__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record__Prior.Description__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Steps__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record__Prior.Steps__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ExpectedBehavior__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record__Prior.ExpectedBehavior__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Actual_Behavior__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record__Prior.Actual_Behavior__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Publish_Recheck</targetReference>
+            </connector>
+            <label>Tester added info (Needs Info)</label>
+        </rules>
+    </decisions>
+    <description>Publishes UAT_Work_Request__e when Needs Jira Ticket is ticked by hand (Create Jira) or when the tester edits an item marked Needs Info (Recheck Needs Info). Never fires for the integration user.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>fxManualJira</name>
+        <dataType>Boolean</dataType>
+        <expression>AND({!$Record.Needs_Jira_Ticket__c}, NOT({!$Record__Prior.Needs_Jira_Ticket__c}), ISBLANK({!$Record.Jira_Requested_At__c}))</expression>
+    </formulas>
+    <interviewLabel>UAT Feedback - Request Work {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>UAT Feedback - Request Work</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Publish_Create_Jira</name>
+        <label>Publish UAT Work Request</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Action__c</field>
+            <value>
+                <stringValue>Create Jira</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Item_Name__c</field>
+            <value>
+                <elementReference>$Record.Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>UAT_Feedback_Id__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>UAT_Work_Request__e</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Publish_Recheck</name>
+        <label>Publish UAT Work Request</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Action__c</field>
+            <value>
+                <stringValue>Recheck Needs Info</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Item_Name__c</field>
+            <value>
+                <elementReference>$Record.Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>UAT_Feedback_Id__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>UAT_Work_Request__e</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordUpdates>
+        <name>Stamp_Jira_Requested</name>
+        <label>Stamp Jira Requested</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Publish_Create_Jira</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Jira_Requested_At__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Jira_Sync_Status__c</field>
+            <value>
+                <stringValue>Requested</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Which_Request</targetReference>
+        </connector>
+        <filterFormula>AND(NOT({!$Permission.UAT_Integration}), OR(AND(ISCHANGED({!$Record.Needs_Jira_Ticket__c}), {!$Record.Needs_Jira_Ticket__c}, ISBLANK({!$Record.Jira_Requested_At__c})), AND(ISPICKVAL({!$Record.Kicksaw_Determination__c}, &quot;Needs Info&quot;), {!$Record.LastModifiedById} = {!$Record.SubmittedBy__c})))</filterFormula>
+        <object>UAT_Feedback__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

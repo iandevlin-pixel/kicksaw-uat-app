@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Triage_Schedule__c</fullName>
+    <description>How often the triage and Jira sync runs for this project. The triage skill and routine read it. On request = each new item fires a run (also needs Instant Runs Enabled). Manual = only when someone runs the skill.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Triage Schedule</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Manual</fullName><default>true</default><label>Manual</label></value>
+            <value><fullName>On request</fullName><default>false</default><label>On request</label></value>
+            <value><fullName>Hourly</fullName><default>false</default><label>Hourly</label></value>
+            <value><fullName>Every 4 hours</fullName><default>false</default><label>Every 4 hours</label></value>
+            <value><fullName>Daily</fullName><default>false</default><label>Daily</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

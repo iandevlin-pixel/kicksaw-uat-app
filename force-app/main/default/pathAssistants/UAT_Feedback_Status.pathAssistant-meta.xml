@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>UAT_Feedback__c</entityName>
+    <fieldName>Status__c</fieldName>
+    <masterLabel>UAT Feedback Status</masterLabel>
+    <pathAssistantSteps>
+        <info>&lt;strong&gt;New.&lt;/strong&gt; Waiting for triage and a Kicksaw decision on the UAT Review tab.</info>
+        <picklistValueName>New</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;strong&gt;In Progress.&lt;/strong&gt; A Jira ticket exists; Kicksaw is working on it.</info>
+        <picklistValueName>In Progress</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <info>&lt;strong&gt;Ready for Retest.&lt;/strong&gt; The fix is in. Tester: retest and resolve it, or reopen it with what's still wrong.</info>
+        <picklistValueName>Ready for Retest</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>__MASTER__</recordTypeName>
+</PathAssistant>

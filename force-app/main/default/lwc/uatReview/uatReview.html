@@ -1,0 +1,135 @@
+<template>
+    <article class="ur" style={rootStyle} tabindex="0" aria-label="UAT Review" onkeydown={handleKey}>
+        <header class="ur-head" onwheel={handleWheel}>
+            <div class="ur-title">
+                <h2 class="ur-h">UAT Review</h2>
+                <span lwc:if={hasItems} class="ur-badge" title="Left to review">{remaining}</span>
+            </div>
+            <div class="ur-tabs" role="tablist" aria-label="Which items">
+                <button type="button" role="tab" class={reviewTabClass} aria-selected={isReviewView} data-view="review" onclick={handleView}>To review</button>
+                <button type="button" role="tab" class={needsInfoTabClass} aria-selected={isNeedsInfoView} data-view="needsInfo" onclick={handleView}>Needs info</button>
+                <button type="button" class="ur-tool" title="Refresh" aria-label="Refresh" onclick={handleRefresh}>
+                    <svg class="ur-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"></path><path d="M20 4v5h-5"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <div lwc:if={hasItems} class="ur-progress-row" onwheel={handleWheel}>
+            <span class="ur-count">{position} of {total}</span>
+            <div class="ur-progress" role="progressbar" aria-label="Review progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressPercent}>
+                <div class="ur-progress-fill" style={progressStyle}></div>
+            </div>
+            <span class="ur-done-count">{decidedCount} decided · {savedCount} saved</span>
+        </div>
+
+        <div class="ur-body">
+            <template lwc:if={loading}>
+                <div class="ur-empty"><lightning-spinner size="small" alternative-text="Loading"></lightning-spinner></div>
+            </template>
+            <template lwc:elseif={error}>
+                <div class="ur-empty"><p class="ur-empty-h">Couldn't load items</p><p>{error}</p></div>
+            </template>
+            <template lwc:elseif={allDone}>
+                <div class="ur-empty">
+                    <p class="ur-empty-h">All reviewed</p>
+                    <p>{doneText}</p>
+                </div>
+            </template>
+            <template lwc:elseif={current}>
+                <section class="ur-card" aria-live="polite">
+                    <div class="ur-card-head" onwheel={handleWheel} title="Scroll the mouse wheel here to flip through items">
+                        <div class="ur-head-row">
+                            <div>
+                                <a href={currentUrl} onclick={handleOpenItem} class="ur-name">{current.name}</a>
+                                <span class="ur-pill">{current.type}</span>
+                                <span lwc:if={current.fileCount} class="ur-pill">{current.fileCount} file(s)</span>
+                                <span lwc:if={isSaved} class="ur-pill ur-saved-pill">Saved</span>
+                            </div>
+                            <div class="ur-sev" role="radiogroup" aria-label="Severity">
+                                <span class="ur-sev-label">Severity</span>
+                                <template for:each={severityOptions} for:item="opt">
+                                    <button key={opt.value} type="button" role="radio" aria-checked={opt.selected} class={opt.cls}
+                                        data-value={opt.value} onclick={handleSeverity}>{opt.value}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <p class="ur-meta">{metaLine}</p>
+                        <p lwc:if={navNotice} class="ur-notice" role="status">{navNotice}</p>
+                    </div>
+
+                    <div class="ur-cols">
+                        <div class="ur-col">
+                            <h3 class="ur-sec">What the tester reported</h3>
+                            <div class="ur-story">
+                                <span class="ur-meta">Story:</span>
+                                <template lwc:if={storyName}>
+                                    <a lwc:if={storyUrl} href={storyUrl} target="_blank" rel="noopener">{storyName}</a>
+                                    <span lwc:else>{storyName}</span>
+                                    <span lwc:if={storyIsSuggested} class="ur-pill ur-suggested" title="Triage matched this story; check it">Suggested by triage</span>
+                                </template>
+                                <span lwc:else class="ur-meta">none yet</span>
+                                <button type="button" class="ur-linkbtn" onclick={handleToggleStory}>{storyToggleLabel}</button>
+                            </div>
+                            <template lwc:if={showStoryPicker}>
+                                <lightning-record-picker label="Tested story" object-api-name="UAT_Story__c"
+                                    placeholder="Search stories…" onchange={handleStoryPick}></lightning-record-picker>
+                            </template>
+                            <p lwc:if={current.objectName} class="ur-meta">On: {current.objectName}
+                                <a lwc:if={capturedUrl} href={capturedUrl} onclick={handleOpenCaptured} class="ur-link">open record</a>
+                            </p>
+                            <p class="ur-text">{current.description}</p>
+                            <template lwc:if={current.steps}><h4 class="ur-sub">Steps</h4><lightning-formatted-rich-text value={current.steps}></lightning-formatted-rich-text></template>
+                            <template lwc:if={current.expected}><h4 class="ur-sub">Expected</h4><lightning-formatted-rich-text value={current.expected}></lightning-formatted-rich-text></template>
+                            <template lwc:if={current.actual}><h4 class="ur-sub">Actual</h4><lightning-formatted-rich-text value={current.actual}></lightning-formatted-rich-text></template>
+                            <template lwc:if={isNeedsInfoView}><h4 class="ur-sub">Asked</h4><lightning-formatted-rich-text value={current.resolution}></lightning-formatted-rich-text></template>
+                        </div>
+                        <div class="ur-col ur-triage">
+                            <h3 class="ur-sec">Triage</h3>
+                            <p lwc:if={notTriaged} class="ur-meta">This item hasn't been triaged yet. You can still write a proposal and decide it.</p>
+                            <label class="ur-label" for="ur-proposal">Proposed resolution (edit before sending to Jira)</label>
+                            <textarea id="ur-proposal" class="ur-textarea ur-ta-proposal" data-field="proposal" oninput={handleProposal}></textarea>
+                            <template lwc:if={current.reasoning}>
+                                <h4 class="ur-sub">Classification reasoning</h4>
+                                <div class="ur-box">{current.reasoning}</div>
+                            </template>
+                            <template lwc:if={current.repro}>
+                                <h4 class="ur-sub">Repro steps</h4>
+                                <div class="ur-box">{current.repro}</div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="ur-decide">
+                        <div class="ur-choices" role="radiogroup" aria-label="Determination">
+                            <template for:each={decisionOptions} for:item="opt">
+                                <button key={opt.value} type="button" role="radio" aria-checked={opt.selected} class={opt.cls}
+                                    data-value={opt.value} onclick={handleDecision}>{opt.label}</button>
+                            </template>
+                        </div>
+                        <template lwc:if={needsNote}>
+                            <label class="ur-label" for="ur-note">{noteLabel}</label>
+                            <textarea id="ur-note" class="ur-textarea ur-ta-note" data-field="note" placeholder={notePlaceholder} oninput={handleNote}></textarea>
+                        </template>
+                        <template lwc:if={isDuplicate}>
+                            <lightning-record-picker label="Original item" object-api-name="UAT_Feedback__c"
+                                placeholder="Search UAT items…" onchange={handleDuplicateOf}></lightning-record-picker>
+                        </template>
+                        <p lwc:if={actionError} class="ur-error" role="alert">{actionError}</p>
+                    </div>
+                </section>
+            </template>
+        </div>
+
+        <footer lwc:if={showFooter} class="ur-foot">
+            <span class="ur-keys">← Back · → Next (saves) · S Skip · wheel over the header flips items</span>
+            <div class="ur-foot-btns">
+                <button type="button" class="ur-btn ur-ghost" onclick={handleBack} disabled={backDisabled} title="Back to the previous item (←)">Back</button>
+                <template lwc:if={current}>
+                    <button type="button" class="ur-btn ur-ghost" onclick={handleSkip} disabled={saving} title="Skip without saving (S)">Skip</button>
+                    <button type="button" class="ur-btn ur-next" onclick={handleNext} disabled={saving} title={nextTitle}>{nextLabel}</button>
+                    <button type="button" class={primaryClass} onclick={handlePrimary} disabled={primaryDisabled} title={primaryTitle}>{primaryLabel}</button>
+                </template>
+            </div>
+        </footer>
+    </article>
+</template>

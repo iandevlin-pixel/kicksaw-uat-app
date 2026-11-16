@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Acceptance_Criteria__c</fullName>
+    <description>The story's description and acceptance criteria, copied from Jira as plain text.</description>
+    <label>Acceptance Criteria</label>
+    <length>131072</length>
+    <type>LongTextArea</type>
+    <visibleLines>15</visibleLines>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Smoke_Test_Steps__c</fullName>
+    <description>Short smoke test for the story: the few steps a tester runs to confirm it works. Loaded from the story's Jira test steps if it has them, or written by Kicksaw.</description>
+    <label>Smoke Test Steps</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>8</visibleLines>
+</CustomField>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Review UAT feedback one item at a time (Kicksaw reviewers).</description>
+    <flexiPage>UAT_Review</flexiPage>
+    <label>UAT Review</label>
+    <motif>Custom19: Wrench</motif>
+</CustomTab>

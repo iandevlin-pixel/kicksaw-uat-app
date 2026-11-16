@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Instant_Runs_Enabled__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, each UAT work request fires the triage routine right away. When unchecked, requests wait for the next scheduled run.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Instant Runs Enabled</label>
+    <type>Checkbox</type>
+</CustomField>

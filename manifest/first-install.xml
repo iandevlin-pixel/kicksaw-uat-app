@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Deployed only on the first install, when the org has no Kicksaw UAT Setting records yet.
+         Never redeploy over a configured org: these hold each project's settings. -->
+    <types>
+        <members>Kicksaw_UAT_Setting.Default</members>
+        <members>Kicksaw_UAT_Setting.UAT_Settings</members>
+        <name>CustomMetadata</name>
+    </types>
+    <version>62.0</version>
+</Package>

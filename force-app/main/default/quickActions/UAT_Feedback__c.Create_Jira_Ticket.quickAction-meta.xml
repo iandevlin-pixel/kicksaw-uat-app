@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Kicksaw: request a Jira UAT ticket for this item (the triage run creates it).</description>
+    <flowDefinition>UAT_Create_Jira_Ticket</flowDefinition>
+    <label>Create Jira Ticket</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

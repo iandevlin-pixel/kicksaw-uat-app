@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layoutSections>
+        <customLabel>false</customLabel>
+        <detailHeading>false</detailHeading>
+        <editHeading>true</editHeading>
+        <label>Information</label>
+        <layoutColumns>
+            <layoutItems><behavior>Required</behavior><field>Name</field></layoutItems>
+            <layoutItems><behavior>Required</behavior><field>Jira_Key__c</field></layoutItems>
+            <layoutItems><behavior>Edit</behavior><field>Summary__c</field></layoutItems>
+            <layoutItems><behavior>Edit</behavior><field>Jira_URL__c</field></layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems><behavior>Edit</behavior><field>Jira_Status__c</field></layoutItems>
+            <layoutItems><behavior>Edit</behavior><field>Epic__c</field></layoutItems>
+            <layoutItems><behavior>Edit</behavior><field>Sprint__c</field></layoutItems>
+            <layoutItems><behavior>Readonly</behavior><field>Last_Synced__c</field></layoutItems>
+        </layoutColumns>
+        <style>TwoColumnsTopToBottom</style>
+    </layoutSections>
+    <layoutSections>
+        <customLabel>true</customLabel>
+        <detailHeading>true</detailHeading>
+        <editHeading>true</editHeading>
+        <label>Acceptance criteria and smoke test</label>
+        <layoutColumns>
+            <layoutItems><behavior>Edit</behavior><field>Acceptance_Criteria__c</field></layoutItems>
+            <layoutItems><behavior>Edit</behavior><field>Smoke_Test_Steps__c</field></layoutItems>
+        </layoutColumns>
+        <style>OneColumn</style>
+    </layoutSections>
+    <layoutSections>
+        <customLabel>false</customLabel>
+        <detailHeading>true</detailHeading>
+        <editHeading>false</editHeading>
+        <label>System Information</label>
+        <layoutColumns>
+            <layoutItems><behavior>Readonly</behavior><field>CreatedById</field></layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems><behavior>Readonly</behavior><field>LastModifiedById</field></layoutItems>
+        </layoutColumns>
+        <style>TwoColumnsTopToBottom</style>
+    </layoutSections>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>Type__c</fields>
+        <fields>Priority__c</fields>
+        <fields>Status__c</fields>
+        <relatedList>UAT_Feedback__c.Tested_Story__c</relatedList>
+    </relatedLists>
+    <showEmailCheckbox>false</showEmailCheckbox>
+    <showHighlightsPanel>false</showHighlightsPanel>
+    <showInteractionLogPanel>false</showInteractionLogPanel>
+    <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
+</Layout>

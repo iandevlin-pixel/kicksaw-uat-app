@@ -1,0 +1,30 @@
+{
+  "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
+  "app": "Kicksaw UAT App",
+  "latest": {
+    "version": "0.3.0",
+    "tag": "v0.3.0",
+    "notes": "UAT App v2: AI triage, Jira sync, UAT Review (full-height card, Back/Skip/Next, wheel flipping, severity), utility bar feedback, one-step install."
+  },
+  "source": {
+    "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",
+    "visibility": "public: anyone can download a release; no GitHub login needed",
+    "manifest": "manifest/uat-app.xml",
+    "firstInstallManifest": "manifest/first-install.xml",
+    "removalsPerRelease": "release/<tag>/destructiveChanges.xml",
+    "testClasses": [
+      "UatReviewControllerTest",
+      "TestManagementControllerTest",
+      "NavigationServiceControllerTest",
+      "multiselectToCollection_Test"
+    ]
+  },
+  "package": {
+    "_comment": "Optional, for a one-click install link later. TBD until a package version is built.",
+    "commercial": { "packageVersionId": "TBD" },
+    "govCloud": { "packageVersionId": "TBD" },
+    "sandboxInstallUrl": "https://test.salesforce.com/packaging/installPackage.apexp?p0=<packageVersionId>",
+    "productionInstallUrl": "https://login.salesforce.com/packaging/installPackage.apexp?p0=<packageVersionId>",
+    "govCloudInstallUrl": "https://<mydomain>.my.salesforce.com/packaging/installPackage.apexp?p0=<packageVersionId>"
+  }
+}

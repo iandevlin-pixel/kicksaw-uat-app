@@ -9,12 +9,23 @@ One skill for the whole UAT process on any Kicksaw project. The person only name
 project key or org alias). You find everything else. Nothing about a particular client lives in this skill: every
 project value is asked for or discovered, and stored in the org's **Kicksaw UAT Setting** (`Default` record).
 
+## Where the app and this skill live
+
+- **Source repo (public):** https://github.com/iandevlin-pixel/kicksaw-uat-app (`source.repo` below means
+  `https://github.com/iandevlin-pixel/kicksaw-uat-app.git`). Releases are tags `v*`; current release `v0.3.0`.
+- **Install settings:** `install-versions.json` next to this file. If it isn't there (for example the skill was
+  saved on its own), read it from
+  https://raw.githubusercontent.com/iandevlin-pixel/kicksaw-uat-app/main/skills/kicksaw-uat/install-versions.json
+  (`latest.tag`, `latest.version`, `source.repo`, manifests and test classes).
+- **This skill's latest copy:** `skills/kicksaw-uat/SKILL.md` in that repo. If it's newer than this copy, follow it.
+- The original v1 app is in Kicksaw's older repo Kicksaw-Consulting/internal-uat-application; never install v2 from there.
+
 ## Starting a new project
 
 Prerequisites (check them; ask for what's missing):
 1. **Salesforce CLI** (`sf`) logged in to the client's UAT org (usually a sandbox): `sf org login web --alias <alias>`.
 2. **Jira access** to the client's Jira project: the Atlassian connector (MCP) or API access.
-3. **git** installed, to download the app's source (`source.repo` in `install-versions.json`). The repo is public,
+3. **git** installed, to download the app's source from https://github.com/iandevlin-pixel/kicksaw-uat-app. The repo is public,
    so no GitHub login is needed. Only used to install or upgrade the app.
 4. **The client's AI approval** to have an AI assistant read their UAT records (many clients need this, government
    and health clients especially). Don't triage until it's confirmed.
@@ -267,8 +278,8 @@ time and check each one. Never ask for or accept the login value or token in cha
 
 ## Install for the team
 The skill is plain instructions and works in any coding agent that can run `sf` and reach Jira (Atlassian MCP or API).
-- **Claude Code:** copy `skills/kicksaw-uat` to `~/.claude/skills/`, then `/kicksaw-uat <project>`.
-- **Codex (or another agent that reads `AGENTS.md`):** open this repo; `AGENTS.md` points to this file. Ask it to
+- **Claude Code:** copy `skills/kicksaw-uat` from https://github.com/iandevlin-pixel/kicksaw-uat-app to `~/.claude/skills/` (or save this skill to your claude.ai account), then `/kicksaw-uat <project>`.
+- **Codex (or another agent that reads `AGENTS.md`):** open the kicksaw-uat-app repo; `AGENTS.md` points to this file. Ask it to
   "run the kicksaw-uat skill for <project>", or copy the folder into that agent's skills directory if it has one.
 Authenticate `sf` to the client org and have Jira access first.
 

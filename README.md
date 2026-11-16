@@ -105,8 +105,9 @@ Wait for the prompt and then enter the alias of the scratch org you want to crea
 
 The Kicksaw_UAT_Permission set should automatically be assigned to the scratch org user. 
 
-# Client Installation
-Use the following instructions for using this application in client orgs for UAT testing. 
+# v1 install (legacy, Kicksaw-Consulting repo)
+v2 installs with the `kicksaw-uat` skill from this repo (see "Install UAT App v2"); the button below deploys the old v1
+from Kicksaw's original repo. Use the following instructions for v1 in client orgs for UAT testing. 
  ### Instructions 
  * Click the install button below below. 
  * Assign the Kicksaw_UAT_App permission set to the users who should have access to objects/application

@@ -10,8 +10,10 @@ are generated here and deployed to that one org.
   python3 scripts/sprint_list_views.py --org <alias> --from-org            # plan only
   python3 scripts/sprint_list_views.py --org <alias> --from-org --deploy   # create the missing views
 
-It only ever creates views named UAT_Sprint_*. It never changes or deletes a view: views whose sprint is no longer in
-Jira are listed as "stale" for a person to decide. No sprints: it says so and does nothing.
+It only ever writes views named UAT_Sprint_*, and never deletes one: views whose sprint is no longer in Jira are listed
+as "stale" for a person to decide. --rewrite also redeploys the views that already exist (to repair their filters).
+After a deploy it checks every view returns the same number of stories as a direct count for that sprint.
+No sprints: it says so and does nothing.
 """
 import argparse, json, os, re, subprocess, sys, tempfile
 from xml.sax.saxutils import escape
@@ -47,11 +49,16 @@ def dev_name(name, taken):
     return cand
 
 
+def filter_value(sprint):
+    # A comma in a list view filter value means OR ("a, b" = a OR b), so a sprint name with a comma must be quoted.
+    return '"' + sprint.replace('"', '') + '"' if ',' in sprint else sprint
+
+
 def view_xml(full_name, sprint):
     cols = ''.join(f'    <columns>{c}</columns>\n' for c in COLUMNS)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<ListView xmlns="http://soap.sforce.com/2006/04/metadata">\n'
             f'    <fullName>{full_name}</fullName>\n{cols}    <filterScope>Everything</filterScope>\n'
-            f'    <filters>\n        <field>Sprint__c</field>\n        <operation>equals</operation>\n        <value>{escape(sprint)}</value>\n    </filters>\n'
+            f'    <filters>\n        <field>Sprint__c</field>\n        <operation>equals</operation>\n        <value>{escape(filter_value(sprint))}</value>\n    </filters>\n'
             f'    <label>{escape(sprint[:40])}</label>\n</ListView>\n')
 
 
@@ -61,6 +68,7 @@ def main():
     ap.add_argument('--sprints', nargs='*', help='sprint names from Jira')
     ap.add_argument('--from-org', action='store_true', help='use the sprint names already on UAT Stories')
     ap.add_argument('--deploy', action='store_true', help='create the missing list views (default: plan only)')
+    ap.add_argument('--rewrite', action='store_true', help='also redeploy the UAT_Sprint_* views that already exist')
     a = ap.parse_args()
 
     if a.sprints:
@@ -88,15 +96,37 @@ def main():
     lv_dir = os.path.join(work, 'force-app/main/default/objects/UAT_Story__c/listViews')
     os.makedirs(lv_dir)
     json.dump({'packageDirectories': [{'path': 'force-app', 'default': True}], 'sourceApiVersion': '62.0'}, open(os.path.join(work, 'sfdx-project.json'), 'w'))
-    for s in missing:
-        dn = dev_name(s, taken)
+    targets = [(s, dev_name(s, taken)) for s in missing]
+    if a.rewrite:
+        targets += [(s, have[s[:40]]) for s in sprints if s[:40] in have]
+        plan['rewritten'] = [s[:40] for s in sprints if s[:40] in have]
+    for s, dn in targets:
         open(os.path.join(lv_dir, dn + '.listView-meta.xml'), 'w').write(view_xml(dn, s))
-        plan['to_create'].append({'list_view': s[:40], 'api_name': dn, 'filter': f'Sprint equals "{s}"'})
+        if s in missing:
+            plan['to_create'].append({'list_view': s[:40], 'api_name': dn, 'filter': f'Sprint equals "{s}"'})
     plan['source_dir'] = work
-    if a.deploy and missing:
+    if a.deploy and targets:
         res = sf('project', 'deploy', 'start', '-o', a.org, '-d', os.path.join(work, 'force-app'), '--wait', '20', '--ignore-conflicts')
         plan['deployed'] = res.get('status') == 'Succeeded' or res.get('success') is True
         plan['deploy_id'] = res.get('id')
+    # Check: each view must return what a direct count for that sprint returns.
+    views = sf('data', 'query', '-o', a.org, '-q',
+               f"SELECT Id, Name FROM ListView WHERE SobjectType = 'UAT_Story__c' AND DeveloperName LIKE '{PREFIX}%'")['records']
+    by_label = {v['Name']: v['Id'] for v in views}
+    check = []
+    for s in sprints:
+        if s[:40] not in by_label:
+            continue
+        want = sf('data', 'query', '-o', a.org, '-q', "SELECT COUNT() FROM UAT_Story__c WHERE Sprint__c = '" + s.replace("\\", "\\\\").replace("'", "\\'") + "'")['totalSize']
+        q = sf('api', 'request', 'rest', f"/services/data/v62.0/sobjects/UAT_Story__c/listviews/{by_label[s[:40]]}/describe", '-o', a.org)
+        q = q.get('body', q) if isinstance(q, dict) else json.loads(q)
+        q = json.loads(q) if isinstance(q, str) else q
+        where = q['query'][q['query'].index('FROM'):]
+        where = where[:where.index('ORDER BY')] if 'ORDER BY' in where else where
+        got = sf('data', 'query', '-o', a.org, '-q', 'SELECT COUNT() ' + where)['totalSize']
+        check.append({'list_view': s[:40], 'stories_in_sprint': want, 'list_view_returns': got, 'ok': want == got})
+    plan['check'] = check
+    plan['all_views_correct'] = all(c['ok'] for c in check)
     print(json.dumps(plan, indent=2))
 
 

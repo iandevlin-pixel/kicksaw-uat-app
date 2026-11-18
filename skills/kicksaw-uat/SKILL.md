@@ -279,6 +279,9 @@ Testers and reviewers browse stories by sprint, so each Jira sprint gets a UAT S
    "Sprint equals <name>", API name `UAT_Sprint_*`), the ones already there, and stale ones. In setup, or when a
    person runs the skill, show the plan and add `--deploy` after their yes (production: an explicit yes naming the
    org). A scheduled run only reports new sprints; it never deploys.
+   After a deploy the script checks every view: `check` lists, per sprint, the stories in that sprint and what the
+   list view returns, and `all_views_correct` must be true. If it is false, say which view is wrong and run it again
+   with `--rewrite --deploy` (a sprint name with a comma has to be quoted in the filter; the script does that).
 4. **Stale views** (a sprint renamed or removed in Jira): the script never deletes. List them in the report and ask
    whether to remove them.
 The views live in the project's org only. Never add them to the app source: sprint names differ per project.

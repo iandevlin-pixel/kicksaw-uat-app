@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.4.1",
-    "tag": "v0.4.1",
-    "notes": "0.4.0 plus: after the story sync the skill adds one UAT Story list view per Jira sprint (scripts/sprint_list_views.py)."
+    "version": "0.4.2",
+    "tag": "v0.4.2",
+    "notes": "0.4.1 plus a fix: sprint list views for sprint names that contain a comma were blank. Orgs set up with 0.4.1: run scripts/sprint_list_views.py with --rewrite --deploy."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

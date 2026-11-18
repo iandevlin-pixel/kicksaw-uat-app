@@ -264,6 +264,26 @@ Run `Story_JQL__c` in Jira (all pages). Upsert `UAT_Story__c` on `Jira_Key__c`: 
 what's there if Jira has none), `Last_Synced__c` = now. Use a bulk upsert from a CSV with LF line endings. Report stories that left the JQL;
 don't delete them.
 
+### 2.1b Sprint list views (after every story sync)
+Testers and reviewers browse stories by sprint, so each Jira sprint gets a UAT Story list view.
+1. **Check Jira for sprints.** Collect the sprint names from the stories the Story JQL returned (the sprint field on
+   each story), plus the active and future sprints on the project's own board that belong to this project. A board can
+   show other projects' sprints: leave those out. Use the sprint's name exactly as Jira has it; it is the value the
+   sync writes to `Sprint__c`.
+2. **No sprints** (a Kanban project, or none created yet): say so in the report and do nothing.
+3. **Sprints found:** from the release folder (or a fresh clone of the release), run
+   ```bash
+   python3 scripts/sprint_list_views.py --org <alias> --sprints "<sprint 1>" "<sprint 2>" ...
+   ```
+   It prints the plan and changes nothing: the views to create (one per sprint, named after the sprint, filter
+   "Sprint equals <name>", API name `UAT_Sprint_*`), the ones already there, and stale ones. In setup, or when a
+   person runs the skill, show the plan and add `--deploy` after their yes (production: an explicit yes naming the
+   org). A scheduled run only reports new sprints; it never deploys.
+4. **Stale views** (a sprint renamed or removed in Jira): the script never deletes. List them in the report and ask
+   whether to remove them.
+The views live in the project's org only. Never add them to the app source: sprint names differ per project.
+
+
 **Acceptance criteria.** Projects keep them in different places, so read both and never assume:
 1. Look for a Jira field named "Acceptance Criteria" (or close: "AC", "Acceptance criteria / DoD") on the stories. It is
    a custom field, so its id differs per Jira site: find it by name in the fields the search returns (ask for all

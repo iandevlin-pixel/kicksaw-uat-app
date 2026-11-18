@@ -1,6 +1,6 @@
 # Kicksaw UAT Testing Application
 
-> **Kicksaw UAT App 0.4.0 (UAT App v2).** Source of truth for installs is the tagged release in
+> **Kicksaw UAT App 0.4.1 (UAT App v2).** Source of truth for installs is the tagged release in
 > [iandevlin-pixel/kicksaw-uat-app](https://github.com/iandevlin-pixel/kicksaw-uat-app), based on Kicksaw's original
 > repo [Kicksaw-Consulting/internal-uat-application](https://github.com/Kicksaw-Consulting/internal-uat-application)
 > (v1 and its install links live there, unchanged). Install with the `kicksaw-uat` skill (see "Install UAT App v2").
@@ -51,6 +51,7 @@ data migration): fields `Claude_Proposed_Resolution__c`, `Claude_Classification_
 external credential `Claude_UAT_Triage` (principal `Claude_Principal`); external service `ClaudeUATTriage`; flow element
 `Set_Has_Claude_Proposal`. The triage skill works from Claude Code or Codex (`AGENTS.md` / `CLAUDE.md` point to it).
 
+**Version 0.4.1 (Nov 2026):** UAT Story list views per Jira sprint. After the story sync the skill checks the project's sprints in Jira and, if it has any, adds one UAT Story list view per sprint, named after the sprint (`scripts/sprint_list_views.py`, views `UAT_Sprint_*`). The views are created in the project's org, not shipped in the app, because sprint names differ per project. A project without sprints gets none.
 **Version 0.4.0 (Nov 2026):** easier for other projects. Testers record a retest themselves with **Retest Result** on the item (flow `UAT_Retest_Result`): *It works now* closes it as Resolved; *It is still wrong* reopens the same item (In Progress, Jira Sync Status = Reopen Requested, the note goes to Retest Notes) and the next skill run reopens the Jira ticket. New fields `Retest_Notes__c`, `Retest_Failed_At__c`. Skill: readiness check (`/kicksaw-uat <project> check`), acceptance criteria read from the Jira Acceptance Criteria field, Status Mapping built from the project's own Jira statuses, fallbacks (no future-phase sprint, no Sub-task type, unmapped statuses), Needs Info recheck.
 **Version 0.3.2 (Nov 2026):** tester notifications: email by address and skipped when there is none (no flow error emails); setup sets the channel (App).
 **Version 0.3.1 (Nov 2026):** two flow fixes found installing over v1 (Test Run - After Save, UAT Feedback - Notify Tester).

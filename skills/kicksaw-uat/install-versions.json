@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.4.0",
-    "tag": "v0.4.0",
-    "notes": "0.3.2 plus: Retest Result action for testers (passed closes the item, still wrong reopens the same item and its Jira ticket), fields Retest Notes and Retest Failed At, Jira Sync Status value Reopen Requested. Skill: readiness check, acceptance criteria from the Jira field, per-project status mapping, fallbacks, Needs Info recheck."
+    "version": "0.4.1",
+    "tag": "v0.4.1",
+    "notes": "0.4.0 plus: after the story sync the skill adds one UAT Story list view per Jira sprint (scripts/sprint_list_views.py)."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

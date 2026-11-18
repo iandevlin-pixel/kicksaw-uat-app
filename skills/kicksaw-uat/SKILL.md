@@ -39,6 +39,7 @@ Setup asks for or discovers everything a project has to supply:
 | Sandbox vs production, commercial vs Government Cloud | `Organization` query | - |
 | Jira site and project key | Atlassian connector lookup, confirm | `Jira_Site__c`, `JIRA_ProjectID__c` |
 | Which Jira issues are the stories | default `project = <KEY> AND issuetype = Story`, confirm | `Story_JQL__c` |
+| Where the acceptance criteria are on a story | look at 2 or 3 stories: an "Acceptance Criteria" field, the description, or both (step 2.1); say what you found | the run report |
 | Future Phase sprint (for enhancements) | the project's board, confirm | `Future_Phase_Sprint_ID__c` |
 | Jira status → UAT status mapping | the project's Jira workflow, confirm | `Status_Mapping__c` |
 | Bugs as Sub-tasks of the story, or linked Tasks | ask the project lead (default Sub-task) | the run report |
@@ -192,10 +193,23 @@ report. Before triage, check it is still there:
 
 ### 2.1 Sync stories
 Run `Story_JQL__c` in Jira (all pages). Upsert `UAT_Story__c` on `Jira_Key__c`: `Name` = "KEY summary" (80 chars),
-`Summary__c`, `Jira_URL__c`, `Acceptance_Criteria__c` (the description as plain text), `Jira_Status__c`, `Epic__c`,
+`Summary__c`, `Jira_URL__c`, `Acceptance_Criteria__c` (see below), `Jira_Status__c`, `Epic__c`,
 `Sprint__c`, `Smoke_Test_Steps__c` (the story's test steps from Jira if it has them, e.g. a Test Steps field; leave
 what's there if Jira has none), `Last_Synced__c` = now. Use a bulk upsert from a CSV with LF line endings. Report stories that left the JQL;
 don't delete them.
+
+**Acceptance criteria.** Projects keep them in different places, so read both and never assume:
+1. Look for a Jira field named "Acceptance Criteria" (or close: "AC", "Acceptance criteria / DoD") on the stories. It is
+   a custom field, so its id differs per Jira site: find it by name in the fields the search returns (ask for all
+   fields on 2 or 3 stories first), then request that field id on every page.
+2. Build `Acceptance_Criteria__c` as plain text (tables as rows of text), up to the field's 131,072 characters:
+   - Field filled: the field's text first, then a blank line, "Story description:" and the description. The
+     description stays in as context (background, out-of-scope notes, decisions); triage treats the field as the
+     criteria.
+   - No such field, or it is empty on this story: the description alone, as before.
+   - Both empty: leave it blank and list the story in the report as "no acceptance criteria"; triage can't check
+     feedback against it.
+3. In the report say where the criteria came from (field name, description, or both) and how many stories had none.
 
 ### 2.2 Triage new feedback
 ```sql
@@ -206,7 +220,8 @@ FROM UAT_Feedback__c
 WHERE Status__c = 'New' AND (Last_Triage_Run__c = null OR Triage_Requested_At__c > Last_Triage_Run__c)
 ```
 For every item (Bug, Enhancement or Training):
-1. **Story.** If the tester picked one, read its acceptance criteria. If not, match the item to the likeliest UAT Story
+1. **Story.** If the tester picked one, read its acceptance criteria. Where the text has a "Story description:" part
+   (step 2.1), the text above it is the criteria and the description is context. If not, match the item to the likeliest UAT Story
    (description, steps, expected/actual, captured object and page against each story's summary and ACs). If one fits
    clearly, set `Tested_Story__c` to it and tick **Story Suggested by Triage** (`Story_Suggested_by_Claude__c = true`),
    and say why in the reasoning (quote the AC it matches). If none fits well, leave it blank and say so (often a sign

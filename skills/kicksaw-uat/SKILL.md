@@ -1,6 +1,6 @@
 ---
 name: kicksaw-uat
-description: Runs the whole Kicksaw UAT process for any Kicksaw client project with the Kicksaw UAT App - install and set up the app in the client's org, load the project's Jira stories, triage tester feedback against the acceptance criteria, push bugs and enhancements to Jira, sync status back, and report readiness. Use whenever someone names a project and says "set up UAT", "run UAT triage", "sync UAT stories", "push UAT items to Jira", "UAT status" or runs /kicksaw-uat <project>.
+description: Runs the whole Kicksaw UAT process for any Kicksaw client project with the Kicksaw UAT App - install and set up the app in the client's org, load the project's Jira stories, triage tester feedback against the acceptance criteria, push bugs and enhancements to Jira, sync status back, and report readiness. Use whenever someone names a project and says "set up UAT", "check UAT readiness", "run UAT triage", "sync UAT stories", "push UAT items to Jira", "UAT status" or runs /kicksaw-uat <project>.
 ---
 
 # Kicksaw UAT
@@ -40,7 +40,7 @@ Setup asks for or discovers everything a project has to supply:
 | Jira site and project key | Atlassian connector lookup, confirm | `Jira_Site__c`, `JIRA_ProjectID__c` |
 | Which Jira issues are the stories | default `project = <KEY> AND issuetype = Story`, confirm | `Story_JQL__c` |
 | Where the acceptance criteria are on a story | look at 2 or 3 stories: an "Acceptance Criteria" field, the description, or both (step 2.1); say what you found | the run report |
-| Future Phase sprint (for enhancements) | the project's board, confirm | `Future_Phase_Sprint_ID__c` |
+| Future Phase sprint (for enhancements) | the project's board, confirm; none: backlog + `future-phase` label | `Future_Phase_Sprint_ID__c` (blank = fallback) |
 | Jira status → UAT status mapping | the project's Jira workflow, confirm | `Status_Mapping__c` |
 | Bugs as Sub-tasks of the story, or linked Tasks | ask the project lead (default Sub-task) | the run report |
 | Testers and Kicksaw reviewers | user picker (setup step 3) | permission sets |
@@ -62,7 +62,63 @@ Setup asks for or discovers everything a project has to supply:
 4. **Compliance:** reading client records with an AI assistant can need the client's AI approval (government and health
    clients especially). Ask once per project whether it's approved for this org; record the answer in the report.
 
+## 0b. Readiness check (read only)
+
+Run it when the person says "check", "is <project> ready for UAT?" or `/kicksaw-uat <project> check`, and always as
+the first thing in Setup. It **changes nothing** in Salesforce or Jira: queries and Jira reads only. Its job is to tell
+a project team what is ready, what the skill will work around, and what they must do first.
+
+Check each line, then print the table. Status is one of **Ready**, **Will work around** (a fallback applies; say
+which) or **Needed first** (setup stops until it's done). Never guess a value: say what you looked at.
+
+| # | Check | How | If it isn't there |
+| --- | --- | --- | --- |
+| 1 | Jira project found, and you can read it | search by key or name | Needed first: Jira access for the person running the skill |
+| 2 | Stories found | run the Story JQL (default `project = <KEY> AND issuetype = Story`); give the count | Needed first if 0: ask which issue type or JQL holds the stories |
+| 3 | Acceptance criteria | on a sample of 10 stories (all if fewer), count those with an "Acceptance Criteria" field filled, those with only a description, those with neither (step 2.1) | Will work around: triage uses the description. Neither on most stories: say triage will be weak, and feedback collection and Jira push still work |
+| 4 | Test steps | same sample: a "Test Steps" field or similar | Optional: say so |
+| 5 | Jira statuses | list the project's statuses and their categories; show the Status Mapping you would propose | Will work around: default mapping by category (see Fallbacks) |
+| 6 | Bug tickets | does the project have a Sub-task issue type? | Will work around: linked Tasks |
+| 7 | Enhancement tickets | is there a board with a future-phase or backlog sprint? | Will work around: backlog with a `future-phase` label |
+| 8 | Salesforce org | `sf org list`: an alias for the UAT org, logged in; `Organization` query: sandbox or production, Government Cloud | Needed first: `sf org login web --alias <alias>`. Production: say so and that it needs an explicit yes |
+| 9 | App | read `Installed_Version__c`: not installed, older build, or current | Setup installs or upgrades it |
+| 10 | Testers and reviewers | count active standard users; who already has the `Kicksaw_UAT_App*` permission sets | Setup asks who they are |
+| 11 | Where testers test | list the org's Lightning apps; which already have New UAT Feedback | Setup adds it to the apps picked |
+| 12 | Client AI approval | ask the person: is AI reading UAT records approved for this client? | Needed first for triage (install and feedback collection can go ahead) |
+
+Output, in this shape (plain words, one line each, worst first inside each group):
+
+```
+UAT readiness: <project> (<Jira key>, <org alias>)        <date>
+Result: READY | READY WITH WORKAROUNDS | NOT READY (<n> things needed first)
+
+Needed first
+  - <check>: <what is missing> -> <who does what>
+Will work around
+  - <check>: <what is missing> -> <what the skill does instead>
+Ready
+  - <check>: <what was found>
+Next step: <one line, e.g. "say 'set up UAT' to install and configure">
+```
+
+### Fallbacks (so a missing piece never blocks a project)
+- **No Acceptance Criteria field:** use the description (step 2.1).
+- **No future-phase sprint, or no board:** leave `Future_Phase_Sprint_ID__c` blank; enhancements are created as Stories
+  in the backlog with the labels `UAT_Label__c` and `future-phase`.
+- **No Sub-task issue type** (team-managed projects often have none), or the project lead prefers it: bugs are created
+  as Tasks (or Bugs, if the project has that type and the lead picks it) linked to the tested story with "relates to".
+- **No status mapping agreed, or a Jira status the mapping doesn't list:** map by Jira status category: a status in the
+  Done category = Ready for Retest, everything else = In Progress. Exception: a Done-category status that means the
+  work was dropped (Cancelled, Won't Do, Rejected, Duplicate) never becomes Ready for Retest: leave the UAT status as
+  it is and list the item in the report for a reviewer. Show the mapping and let the person edit it; in the
+  readiness check, list every project status the saved mapping doesn't cover.
+- **No story on an item and none fits:** a Bug still needs a story for a Sub-task; with linked Tasks it is created
+  unlinked and the report lists it.
+Record each fallback used in the setup report, so the next run does the same.
+
 ## 1. Setup (once per project)
+
+0. Run the **readiness check** (0b). Stop on anything under "Needed first" and tell the person what to do.
 
 1. **Install the app (one step).** The person can just say "install the UAT app in <alias>"; you work out the rest.
    The app is installed from the source of a tagged GitHub release (see `install-versions.json`, next to this file).
@@ -122,8 +178,18 @@ Setup asks for or discovers everything a project has to supply:
    - `Jira_Site__c` (the Jira site the project uses, Kicksaw's or the client's: `<site>.atlassian.net`), `JIRA_ProjectID__c` (project key)
    - `Story_JQL__c`: default `project = <KEY> AND issuetype = Story`
    - `Future_Phase_Sprint_ID__c`: the id of the project's "Future Phase" sprint (find it on the project's board)
-   - `Status_Mapping__c`: map the project's Jira statuses to UAT statuses, e.g.
-     `New,Build Ready,In Progress,On Hold,Ready for QA=In Progress; Done=Ready for Retest`
+   - `Status_Mapping__c`: built from **this project's own Jira statuses**, never copied from another project.
+     1. Read every status the project's story, sub-task, task and bug types can be in, with its category (To Do,
+        In Progress, Done).
+     2. Propose one line per status: Done category = Ready for Retest; a dropped status (Cancelled, Won't Do,
+        Rejected, Duplicate) = no change, a reviewer looks; everything else = In Progress.
+     3. Show the whole table and let the person change any line (the choices per Jira status are: In Progress,
+        Ready for Retest, or "leave it, tell a reviewer"). Ask plainly which status means "fixed and ready for
+        the tester": some projects use Done, others Ready for UAT or Deployed to UAT.
+     4. Save it in the field's format, e.g.
+        `New,Build Ready,In Progress,On Hold,Ready for QA=In Progress; Done=Ready for Retest`. Statuses the person
+        chose to leave are simply not listed. Every other project status must be listed: read the saved value back
+        and check none is missing.
    - `UAT_Label__c` (`UAT`), `Subtask_Prefix__c` (`UAT -`), `Triage_Schedule__c` (start with `Manual`)
    - `New_Test_Run_Notification_Settings__c`: how testers hear about Needs Info, Ready for Retest and closed items:
      `App` (bell notification, the default to use), `Email` or `Both`. Always set it: left out of the settings file,
@@ -241,6 +307,24 @@ For every item (Bug, Enhancement or Training):
      ("Triage", "triage suggests", not a product name). The `Claude_*` API names are legacy; the labels are neutral.
    - `Last_Triage_Run__c` = now
 
+### 2.2b Recheck Needs Info items the tester answered
+Items a reviewer sent back stay `Status__c = 'New'` with `Kicksaw_Determination__c = 'Needs Info'` (the reviewer's
+question is in `Resolution__c`). When the tester edits the item, look at it again:
+```sql
+SELECT Id, Name, Description__c, Steps__c, ExpectedBehavior__c, Actual_Behavior__c, Resolution__c, Tested_Story__c,
+       Tested_Story__r.Acceptance_Criteria__c, Last_Triage_Run__c, LastModifiedDate, LastModifiedById, SubmittedBy__c, CreatedById
+FROM UAT_Feedback__c
+WHERE Status__c = 'New' AND Kicksaw_Determination__c = 'Needs Info'
+```
+Take the ones where `LastModifiedDate > Last_Triage_Run__c` (or it was never triaged) and the last change was made by
+the tester (`LastModifiedById` is `SubmittedBy__c` or `CreatedById`), not by a reviewer or the integration user.
+For each, triage it again as in 2.2 with the new detail, and start `Claude_Proposed_Resolution__c` with
+"Tester replied <date>." then "Proposed: <classification>" (still Needs Info if the question isn't answered: say what
+is still missing). Rewrite the reasoning and repro steps, set `Last_Triage_Run__c`. **Leave `Kicksaw_Determination__c`
+and `Resolution__c` alone:** the item stays on the UAT Review **Needs info** tab, and the reviewer decides it there.
+In the report, list these items as "Needs Info: tester replied", so reviewers know to look. This is also what an
+instant run does for the `Recheck Needs Info` work request.
+
 ### 2.3 Push to Jira
 Kicksaw reviewers decide each item on the **UAT Review** tab (Create Jira ticket / Resolve without Jira / Needs info);
 that sets the fields below. Point reviewers there after a triage run. On the card they can also set the tested story,
@@ -253,7 +337,9 @@ Only bugs and enhancements go to Jira; everything else is resolved in Salesforce
 - Bug → Sub-task of the tested story, summary `<Subtask_Prefix__c> <item summary>`. A bug needs a tested story first
   (UAT Review enforces it). If the project lead chose linked Tasks instead (setup table), create a Task linked to the
   story.
-- Enhancement → Story in the project, in the Future Phase sprint.
+- Enhancement → Story in the project, in the Future Phase sprint. If `Future_Phase_Sprint_ID__c` is blank: in the
+  backlog, with the extra label `future-phase` (Fallbacks, 0b).
+- If the project has no Sub-task type, use the linked-Task fallback for bugs without asking again.
 - Label `UAT_Label__c`. Description: item number, link to the Salesforce record, reasoning and repro steps.
   **Never copy client record data into Jira**; link to it.
 - Set `JIRA_Ticket_URL__c`, `Jira_Status__c`, `Jira_Sync_Status__c = Created`, `Status__c = In Progress`.
@@ -261,12 +347,14 @@ Only bugs and enhancements go to Jira; everything else is resolved in Salesforce
 
 ### 2.4 Sync status and comments back
 For items with a Jira ticket that aren't closed: store the Jira status in `Jira_Status__c`, set `Status__c` from
-`Status_Mapping__c`, and copy the ticket's latest comment into `Jira_Latest_Comment__c` as
+`Status_Mapping__c` (a status the mapping doesn't list: always store it in `Jira_Status__c`, apply the category
+fallback in 0b, and list the item and the status in the report under "Jira status not in the Status Mapping", with
+the line to add; never skip it silently), and copy the ticket's latest comment into `Jira_Latest_Comment__c` as
 "<author>, <date>: <text>" (plain text). Moving to Ready for Retest notifies the tester (flow).
 
 ## 3. Report
-End every run with a short summary: app version (current / upgrade available), utility bar check (apps OK / re-added / still missing), stories synced, items triaged by proposed classification, items waiting for a
-Kicksaw decision, Jira tickets created (keys) and failures, items ready for retest, and open Blocker/High items
+End every run with a short summary: app version (current / upgrade available), utility bar check (apps OK / re-added / still missing), stories synced, items triaged by proposed classification, Needs Info items the tester replied to, items waiting for a
+Kicksaw decision, Jira tickets created (keys) and failures, items ready for retest, Jira statuses not in the Status Mapping, and open Blocker/High items
 (go-live risk). Point to the **UAT Feedback Dashboard** for the live view. At the end of UAT, list anything still open;
 the contract's acceptance window covers unraised issues.
 

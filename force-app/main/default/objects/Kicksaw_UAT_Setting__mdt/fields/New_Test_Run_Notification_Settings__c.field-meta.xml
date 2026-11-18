@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>New_Test_Run_Notification_Settings__c</fullName>
-    <description>Setting for determining if an email or in app notification should be sent when a new test run has been created</description>
+    <description>How testers are notified: about a new test run (v1), and about their UAT Feedback items when Kicksaw marks one Needs Info or Ready for Retest or closes it as Not a Bug, Duplicate or Won&apos;t Do (v2). The API name is kept from v1.</description>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <label>New Test Run Notification Settings</label>
+    <inlineHelpText>How testers are notified about their test runs and feedback items: App (bell), Email, or Both.</inlineHelpText>
+    <label>Tester Notification Channel</label>
     <required>false</required>
     <type>Picklist</type>
     <valueSet>

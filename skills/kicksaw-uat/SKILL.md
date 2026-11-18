@@ -191,7 +191,7 @@ Record each fallback used in the setup report, so the next run does the same.
         chose to leave are simply not listed. Every other project status must be listed: read the saved value back
         and check none is missing.
    - `UAT_Label__c` (`UAT`), `Subtask_Prefix__c` (`UAT -`), `Triage_Schedule__c` (start with `Manual`)
-   - `New_Test_Run_Notification_Settings__c`: how testers hear about Needs Info, Ready for Retest and closed items:
+   - `New_Test_Run_Notification_Settings__c` (labelled **Tester Notification Channel**): how testers hear about Needs Info, Ready for Retest and closed items:
      `App` (bell notification, the default to use), `Email` or `Both`. Always set it: left out of the settings file,
      the field's default is `Email`, and then testers get no bell. Email needs the sandbox's deliverability set to
      All email.

@@ -12,7 +12,7 @@ project value is asked for or discovered, and stored in the org's **Kicksaw UAT 
 ## Where the app and this skill live
 
 - **Source repo (public):** https://github.com/iandevlin-pixel/kicksaw-uat-app (`source.repo` below means
-  `https://github.com/iandevlin-pixel/kicksaw-uat-app.git`). Releases are tags `v*`; current release `v0.3.0`.
+  `https://github.com/iandevlin-pixel/kicksaw-uat-app.git`). Releases are tags `v*`; the current release is `latest.tag` in `install-versions.json`.
 - **Install settings:** `install-versions.json` next to this file. If it isn't there (for example the skill was
   saved on its own), read it from
   https://raw.githubusercontent.com/iandevlin-pixel/kicksaw-uat-app/main/skills/kicksaw-uat/install-versions.json
@@ -345,16 +345,35 @@ Only bugs and enhancements go to Jira; everything else is resolved in Salesforce
 - Set `JIRA_Ticket_URL__c`, `Jira_Status__c`, `Jira_Sync_Status__c = Created`, `Status__c = In Progress`.
   On failure: `Jira_Sync_Status__c = Failed` and report it.
 
+### 2.3b Reopen Jira tickets after a failed retest
+When a tester records **Retest Result > It is still wrong** (app 0.4.0 and later), the same item is reopened: `Status__c =
+In Progress`, `Jira_Sync_Status__c = 'Reopen Requested'`, `Retest_Failed_At__c` = when, and the tester's words are
+added to `Retest_Notes__c`. Pick up `Jira_Sync_Status__c = 'Reopen Requested' AND JIRA_Ticket_URL__c != null`:
+1. Add a comment on the Jira ticket: "UAT retest failed on <date>." then one or two sentences in your own words on
+   what is still wrong, and the link to the Salesforce record. **Never paste the tester's note or client record data.**
+2. Move the ticket back to a working status: list its transitions and take the one that leads to a status mapped to
+   In Progress (prefer one named Reopen, In Progress or To Do). If the workflow has no way back, leave the ticket,
+   say so in the comment, and list it in the report for the project lead.
+3. Set `Jira_Status__c` to the ticket's status now and `Jira_Sync_Status__c = Created`. On failure:
+   `Jira_Sync_Status__c = Failed` and report it. Leave `Status__c` at In Progress.
+An item with no Jira ticket (rare): just set `Jira_Sync_Status__c` back to blank and list it for a reviewer.
+
 ### 2.4 Sync status and comments back
 For items with a Jira ticket that aren't closed: store the Jira status in `Jira_Status__c`, set `Status__c` from
 `Status_Mapping__c` (a status the mapping doesn't list: always store it in `Jira_Status__c`, apply the category
 fallback in 0b, and list the item and the status in the report under "Jira status not in the Status Mapping", with
 the line to add; never skip it silently), and copy the ticket's latest comment into `Jira_Latest_Comment__c` as
 "<author>, <date>: <text>" (plain text). Moving to Ready for Retest notifies the tester (flow).
+**After a failed retest** (`Retest_Failed_At__c` is filled): only move the item to Ready for Retest again when the
+ticket reached its done status *after* `Retest_Failed_At__c` (compare Jira's status-category change date). A ticket
+that is still Done from before the failed retest keeps the item In Progress. Never touch an item whose
+`Jira_Sync_Status__c` is `Reopen Requested`; 2.3b handles it first.
+Closing after a retest is the tester's own step: **Retest Result > It works now** sets Resolved with a Final
+Resolution line. Reviewers can use the same action for a tester.
 
 ## 3. Report
 End every run with a short summary: app version (current / upgrade available), utility bar check (apps OK / re-added / still missing), stories synced, items triaged by proposed classification, Needs Info items the tester replied to, items waiting for a
-Kicksaw decision, Jira tickets created (keys) and failures, items ready for retest, Jira statuses not in the Status Mapping, and open Blocker/High items
+Kicksaw decision, Jira tickets created (keys) and failures, items ready for retest, retests that failed and their Jira tickets reopened, Jira statuses not in the Status Mapping, and open Blocker/High items
 (go-live risk). Point to the **UAT Feedback Dashboard** for the live view. At the end of UAT, list anything still open;
 the contract's acceptance window covers unraised issues.
 

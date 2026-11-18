@@ -4,9 +4,9 @@
       "path": "force-app",
       "default": true,
       "package": "Kicksaw UAT App",
-      "versionName": "ver 0.3",
+      "versionName": "ver 0.4",
       "versionDescription": "Kicksaw UAT App",
-      "versionNumber": "0.3.0.NEXT",
+      "versionNumber": "0.4.0.NEXT",
       "definitionFile": "config/scratch-org-def.json"
     }
   ],

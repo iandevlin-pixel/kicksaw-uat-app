@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Tester: record the result of a retest. Passed closes the item as Resolved; still wrong reopens the same item.</description>
+    <flowDefinition>UAT_Retest_Result</flowDefinition>
+    <label>Retest Result</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

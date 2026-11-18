@@ -95,6 +95,8 @@
         <members>UAT_Feedback__c.RecordURL__c</members>
         <members>UAT_Feedback__c.Record_Link__c</members>
         <members>UAT_Feedback__c.Resolution__c</members>
+        <members>UAT_Feedback__c.Retest_Failed_At__c</members>
+        <members>UAT_Feedback__c.Retest_Notes__c</members>
         <members>UAT_Feedback__c.Retest_Of__c</members>
         <members>UAT_Feedback__c.Status__c</members>
         <members>UAT_Feedback__c.Steps__c</members>
@@ -186,6 +188,7 @@
         <members>Test_Run_After_Save</members>
         <members>Test_Run_Case_After_Save_Set_As_Latest_Test_Run_Case</members>
         <members>UAT_Create_Jira_Ticket</members>
+        <members>UAT_Retest_Result</members>
         <members>UAT_Feedback_Before_Save</members>
         <members>UAT_Feedback_Notify_Tester</members>
         <members>UAT_Feedback_Request_Triage</members>
@@ -257,6 +260,7 @@
         <members>TestRun__c.Clone_Test_Run</members>
         <members>TestRun__c.New_Run_From_Failed_Test_Cases</members>
         <members>UAT_Feedback__c.Create_Jira_Ticket</members>
+        <members>UAT_Feedback__c.Retest_Result</members>
         <name>QuickAction</name>
     </types>
     <types>

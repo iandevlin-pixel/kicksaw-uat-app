@@ -388,6 +388,16 @@
                 <identifier>RecordJira_Latest_Comment_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Retest_Notes__c</fieldItem>
+                <identifier>RecordRetest_Notes_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-a45660fb-78ca-4f00-a028-ec6f02571b40</name>
         <type>Facet</type>
     </flexiPageRegions>

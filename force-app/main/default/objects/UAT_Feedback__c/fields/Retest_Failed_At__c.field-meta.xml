@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Retest_Failed_At__c</fullName>
+    <description>When the tester last reported a failed retest. The status sync only returns the item to Ready for Retest when the Jira ticket was moved to done after this time.</description>
+    <label>Retest Failed At</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

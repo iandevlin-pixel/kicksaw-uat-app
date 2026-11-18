@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.3.2",
-    "tag": "v0.3.2",
-    "notes": "0.3.1 plus: UAT Feedback - Notify Tester emails the tester by address (Submitted By, else creator) and skips the email when there is no address, so no flow error emails; the bell notification is independent of the email. Setup always sets the notification channel (App by default)."
+    "version": "0.4.0",
+    "tag": "v0.4.0",
+    "notes": "0.3.2 plus: Retest Result action for testers (passed closes the item, still wrong reopens the same item and its Jira ticket), fields Retest Notes and Retest Failed At, Jira Sync Status value Reopen Requested. Skill: readiness check, acceptance criteria from the Jira field, per-project status mapping, fallbacks, Needs Info recheck."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

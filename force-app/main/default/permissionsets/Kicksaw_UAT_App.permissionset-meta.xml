@@ -277,6 +277,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>UAT_Feedback__c.Retest_Failed_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>UAT_Feedback__c.Retest_Notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>UAT_Feedback__c.Retest_Of__c</field>
         <readable>true</readable>
     </fieldPermissions>

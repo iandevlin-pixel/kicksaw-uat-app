@@ -28,7 +28,8 @@ private class UatSlackAlertTest {
         Test.stopTest();
         System.assertEquals(1, mock.calls);
         String text = UatSlackAlert.sent[0];
-        System.assert(text.startsWith('New UAT feedback <'), text);
+        System.assert(text.startsWith('New UAT feedback '), text);
+        System.assert(text.contains('/lightning/r/UAT_Feedback__c/'), text);
         System.assert(text.contains('Bug, High, no story picked, submitted by '), text);
         System.assert(!text.contains('Private tester text'), text);
     }

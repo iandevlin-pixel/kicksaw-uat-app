@@ -1,6 +1,6 @@
 # Kicksaw UAT Testing Application
 
-> **Kicksaw UAT App 0.5.0 (UAT App v2).** Source of truth for installs is the tagged release in
+> **Kicksaw UAT App 0.5.1 (UAT App v2).** Source of truth for installs is the tagged release in
 > [iandevlin-pixel/kicksaw-uat-app](https://github.com/iandevlin-pixel/kicksaw-uat-app), based on Kicksaw's original
 > repo [Kicksaw-Consulting/internal-uat-application](https://github.com/Kicksaw-Consulting/internal-uat-application)
 > (v1 and its install links live there, unchanged). Install with the `kicksaw-uat` skill (see "Install UAT App v2").
@@ -51,6 +51,7 @@ data migration): fields `Claude_Proposed_Resolution__c`, `Claude_Classification_
 external credential `Claude_UAT_Triage` (principal `Claude_Principal`); external service `ClaudeUATTriage`; flow element
 `Set_Has_Claude_Proposal`. The triage skill works from Claude Code or Codex (`AGENTS.md` / `CLAUDE.md` point to it).
 
+**Version 0.5.1 (Nov 2026):** the Slack message is plain text with the record link on its own line, so a Slack Workflow Builder webhook works (no Slack admin needed to set it up).
 **Version 0.5.0 (Nov 2026):** optional Slack alert for each new UAT Feedback item: item number (linked), type, severity, story key and submitter, never the tester's text. Turn it on per project with **Slack Alerts Enabled** on the Kicksaw UAT Setting; the channel is the incoming webhook in the named credential `Kicksaw_UAT_Slack`, deployed once from `slack-alerts/` at setup. Runs in the background (Apex trigger `UatFeedbackSlackAlert`, class `UatSlackAlert`), so Slack problems never block saving an item.
 **Version 0.4.4 (Nov 2026):** renamed Jira sprints. `scripts/sprint_list_views.py --deploy --prune` creates views for the new names and removes the views for old or closed sprints (only after a person's yes); the script also runs from any folder now. The story sync uses a story's open sprint when it has been carried over. No org metadata changes.
 **Version 0.4.3 (Nov 2026):** the setting that picks how testers are notified is relabeled **Tester Notification Channel** (was "New Test Run Notification Settings"), with help text, because v2 also uses it for feedback item notifications. API name unchanged: `New_Test_Run_Notification_Settings__c`.

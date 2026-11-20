@@ -235,9 +235,13 @@ Record each fallback used in the setup report, so the next run does the same.
      health clients may need this first; record the answer).
    - Deploy the named credential once: `sf project deploy start -o <alias> -d slack-alerts` from the release folder.
      Never redeploy it on an upgrade (it holds the project's webhook).
-   - A Slack admin creates an incoming webhook for that channel (a Slack app with Incoming Webhooks turned on). The
-     person pastes its URL into Setup > Named Credentials > Kicksaw UAT Slack (legacy) > URL themselves. Never ask for
-     the webhook URL in chat: anyone who has it can post to the channel.
+   - Create the webhook. No Slack admin needed: in Slack, Workflow Builder > New workflow > start "From a webhook",
+     one variable `text` (Text); one step "Send a message to a channel" (the project's channel) whose message is just
+     the `text` variable; name it "Kicksaw UAT Alerts - <client>", "Workflow managers only", Publish. (A Slack app
+     incoming webhook also works, but installing an app usually needs a Slack admin.)
+   - The person copies the web request URL (workflow > "Starts with a webhook") and pastes it into Setup > Named
+     Credentials > Kicksaw UAT Slack (legacy) > URL themselves. Never ask for the URL in chat or paste it for them:
+     anyone who has it can post to the channel.
    - Check **Slack Alerts Enabled** on the settings record (deploy the edited custom metadata file), then create one
      test item to see the message arrive, and delete it.
    If no: leave Slack Alerts Enabled unchecked; nothing posts. To stop alerts later, uncheck it.

@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.5.0",
-    "tag": "v0.5.0",
-    "notes": "0.4.4 plus: optional Slack alert for each new UAT Feedback item (Slack Alerts Enabled setting, Kicksaw_UAT_Slack named credential deployed once from slack-alerts/)."
+    "version": "0.5.1",
+    "tag": "v0.5.1",
+    "notes": "0.5.0 plus: the Slack message is plain text with the link on its own line, so a Slack Workflow Builder webhook (no Slack admin needed) works as well as an app webhook."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

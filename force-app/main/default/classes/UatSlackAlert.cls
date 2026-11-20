@@ -1,7 +1,8 @@
 /**
  * Posts a short Slack message when a new UAT Feedback item is created, so the team can discuss and triage it.
  * Off unless Kicksaw UAT Setting "Default" has Slack Alerts Enabled. The post goes to the Slack incoming webhook stored
- * in the named credential Kicksaw_UAT_Slack (set up per project; the webhook URL picks the channel).
+ * in the named credential Kicksaw_UAT_Slack (set up per project; the webhook picks the channel). Either a Slack app
+ * incoming webhook or a Workflow Builder "From a webhook" trigger with one text variable named "text".
  * The post holds the item number, type, severity, story key, submitter and a link: never the tester's text.
  * Runs in the background, so a Slack problem can never block saving an item.
  */
@@ -61,14 +62,16 @@ public without sharing class UatSlackAlert implements Queueable, Database.Allows
         String story = item.Tested_Story__r != null && String.isNotBlank(item.Tested_Story__r.Jira_Key__c)
             ? 'story ' + item.Tested_Story__r.Jira_Key__c : 'no story picked';
         String who = item.SubmittedBy__r != null ? item.SubmittedBy__r.Name : item.CreatedBy.Name;
-        return 'New UAT feedback <' + link + '|' + esc(item.Name) + '>: '
-            + esc(String.isBlank(item.Type__c) ? 'no type' : item.Type__c) + ', '
-            + esc(String.isBlank(item.Priority__c) ? 'no severity' : item.Priority__c) + ', '
-            + esc(story) + ', submitted by ' + esc(who);
+        // Plain text with the link on its own line: works for a Slack app incoming webhook and a Workflow Builder
+        // webhook (which shows link markup literally).
+        return 'New UAT feedback ' + clean(item.Name) + ': '
+            + clean(String.isBlank(item.Type__c) ? 'no type' : item.Type__c) + ', '
+            + clean(String.isBlank(item.Priority__c) ? 'no severity' : item.Priority__c) + ', '
+            + clean(story) + ', submitted by ' + clean(who) + '\n' + link;
     }
 
-    private static String esc(String s) {
-        return s == null ? '' : s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
+    private static String clean(String s) {
+        return s == null ? '' : s.replace('<', '').replace('>', '');
     }
 
     private static void post(String text) {

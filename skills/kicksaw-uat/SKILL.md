@@ -260,7 +260,8 @@ report. Before triage, check it is still there:
 ### 2.1 Sync stories
 Run `Story_JQL__c` in Jira (all pages). Upsert `UAT_Story__c` on `Jira_Key__c`: `Name` = "KEY summary" (80 chars),
 `Summary__c`, `Jira_URL__c`, `Acceptance_Criteria__c` (see below), `Jira_Status__c`, `Epic__c`,
-`Sprint__c`, `Smoke_Test_Steps__c` (the story's test steps from Jira if it has them, e.g. a Test Steps field; leave
+`Sprint__c` (a story carried over from a closed sprint lists several sprints: use its open sprint, else the last
+one), `Smoke_Test_Steps__c` (the story's test steps from Jira if it has them, e.g. a Test Steps field; leave
 what's there if Jira has none), `Last_Synced__c` = now. Use a bulk upsert from a CSV with LF line endings. Report stories that left the JQL;
 don't delete them.
 
@@ -282,8 +283,10 @@ Testers and reviewers browse stories by sprint, so each Jira sprint gets a UAT S
    After a deploy the script checks every view: `check` lists, per sprint, the stories in that sprint and what the
    list view returns, and `all_views_correct` must be true. If it is false, say which view is wrong and run it again
    with `--rewrite --deploy` (a sprint name with a comma has to be quoted in the filter; the script does that).
-4. **Stale views** (a sprint renamed or removed in Jira): the script never deletes. List them in the report and ask
-   whether to remove them.
+4. **Stale views** (a sprint renamed in Jira, or closed with no story left in it): a rename shows up as a new view to
+   create plus the old name as stale. The script removes nothing unless asked. List them in the report; when a person
+   runs the skill, ask, and on their yes run the same command with `--deploy --prune` (creates the new views, removes
+   the stale ones, then checks every view). A scheduled run only reports them.
 The views live in the project's org only. Never add them to the app source: sprint names differ per project.
 
 

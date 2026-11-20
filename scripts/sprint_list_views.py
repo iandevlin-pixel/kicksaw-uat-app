@@ -9,9 +9,12 @@ are generated here and deployed to that one org.
   python3 scripts/sprint_list_views.py --org <alias> --sprints "Sprint 1 - Foundation" "Sprint 2 - Email"
   python3 scripts/sprint_list_views.py --org <alias> --from-org            # plan only
   python3 scripts/sprint_list_views.py --org <alias> --from-org --deploy   # create the missing views
+  python3 scripts/sprint_list_views.py --org <alias> --sprints ... --deploy --prune   # also remove stale views
 
-It only ever writes views named UAT_Sprint_*, and never deletes one: views whose sprint is no longer in Jira are listed
-as "stale" for a person to decide. --rewrite also redeploys the views that already exist (to repair their filters).
+It only ever writes views named UAT_Sprint_*. Views whose sprint is no longer in Jira (renamed, or closed with no story
+left in it) are listed as "stale"; they are removed only with --deploy --prune, which a person approves. A renamed sprint
+gets a new view under its new name, so a rename is: create the new view, prune the old one.
+--rewrite also redeploys the views that already exist (to repair their filters).
 After a deploy it checks every view returns the same number of stories as a direct count for that sprint.
 No sprints: it says so and does nothing.
 """
@@ -22,8 +25,8 @@ PREFIX = 'UAT_Sprint_'
 COLUMNS = ['NAME', 'Summary__c', 'Jira_Status__c', 'Epic__c', 'Sprint__c', 'Last_Synced__c']
 
 
-def sf(*args):
-    r = subprocess.run(['sf', *args, '--json'], capture_output=True, text=True)
+def sf(*args, cwd=None):
+    r = subprocess.run(['sf', *args, '--json'], capture_output=True, text=True, cwd=cwd)
     try:
         d = json.loads(r.stdout)
     except ValueError:
@@ -68,6 +71,7 @@ def main():
     ap.add_argument('--sprints', nargs='*', help='sprint names from Jira')
     ap.add_argument('--from-org', action='store_true', help='use the sprint names already on UAT Stories')
     ap.add_argument('--deploy', action='store_true', help='create the missing list views (default: plan only)')
+    ap.add_argument('--prune', action='store_true', help='with --deploy: remove the stale UAT_Sprint_* views')
     ap.add_argument('--rewrite', action='store_true', help='also redeploy the UAT_Sprint_* views that already exist')
     a = ap.parse_args()
 
@@ -89,6 +93,8 @@ def main():
     plan = {'org': a.org, 'sprints_in_jira': sprints, 'already_there': sorted(have, key=natural) if not stale else sorted(set(have) - set(stale), key=natural),
             'to_create': [], 'stale_views_for_a_person_to_review': stale, 'deployed': False}
 
+    if a.prune and not a.deploy:
+        plan['note_prune'] = '--prune does nothing without --deploy: the stale views above would be removed.'
     if not sprints:
         plan['note'] = 'No sprints found: no list views created.'
         print(json.dumps(plan, indent=2)); return
@@ -106,9 +112,21 @@ def main():
             plan['to_create'].append({'list_view': s[:40], 'api_name': dn, 'filter': f'Sprint equals "{s}"'})
     plan['source_dir'] = work
     if a.deploy and targets:
-        res = sf('project', 'deploy', 'start', '-o', a.org, '-d', os.path.join(work, 'force-app'), '--wait', '20', '--ignore-conflicts')
+        res = sf('project', 'deploy', 'start', '-o', a.org, '-d', os.path.join(work, 'force-app'), '--wait', '20', '--ignore-conflicts', cwd=work)
         plan['deployed'] = res.get('status') == 'Succeeded' or res.get('success') is True
         plan['deploy_id'] = res.get('id')
+    if a.deploy and a.prune and stale:
+        pdir = os.path.join(work, 'prune'); os.makedirs(pdir)
+        members = ''.join(f'        <members>UAT_Story__c.{have[n]}</members>\n' for n in stale)
+        head = '<?xml version="1.0" encoding="UTF-8"?>\n<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n'
+        open(os.path.join(pdir, 'package.xml'), 'w').write(head + '    <version>62.0</version>\n</Package>\n')
+        open(os.path.join(pdir, 'destructiveChanges.xml'), 'w').write(
+            head + f'    <types>\n{members}        <name>ListView</name>\n    </types>\n    <version>62.0</version>\n</Package>\n')
+        res = sf('project', 'deploy', 'start', '-o', a.org, '--manifest', os.path.join(pdir, 'package.xml'),
+                 '--post-destructive-changes', os.path.join(pdir, 'destructiveChanges.xml'), '--wait', '20', cwd=work)
+        plan['pruned'] = [{'list_view': n, 'api_name': have[n]} for n in stale]
+        plan['prune_deploy_id'] = res.get('id')
+        plan['stale_views_for_a_person_to_review'] = []
     # Check: each view must return what a direct count for that sprint returns.
     views = sf('data', 'query', '-o', a.org, '-q',
                f"SELECT Id, Name FROM ListView WHERE SobjectType = 'UAT_Story__c' AND DeveloperName LIKE '{PREFIX}%'")['records']

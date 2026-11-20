@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.4.3",
-    "tag": "v0.4.3",
-    "notes": "0.4.2 plus: the notification setting is relabeled Tester Notification Channel (API name unchanged)."
+    "version": "0.4.4",
+    "tag": "v0.4.4",
+    "notes": "0.4.3 plus: the sprint list view script handles renamed and closed sprints (--prune, after a yes) and runs from any folder; story sync uses the open sprint. No org metadata changes."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

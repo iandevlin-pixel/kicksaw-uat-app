@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.4.4",
-    "tag": "v0.4.4",
-    "notes": "0.4.3 plus: the sprint list view script handles renamed and closed sprints (--prune, after a yes) and runs from any folder; story sync uses the open sprint. No org metadata changes."
+    "version": "0.5.0",
+    "tag": "v0.5.0",
+    "notes": "0.4.4 plus: optional Slack alert for each new UAT Feedback item (Slack Alerts Enabled setting, Kicksaw_UAT_Slack named credential deployed once from slack-alerts/)."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",
@@ -16,8 +16,10 @@
       "UatReviewControllerTest",
       "TestManagementControllerTest",
       "NavigationServiceControllerTest",
-      "multiselectToCollection_Test"
-    ]
+      "multiselectToCollection_Test",
+      "UatSlackAlertTest"
+    ],
+    "slackAlertsOnce": "slack-alerts (deploy once at setup when the project wants Slack alerts; never on upgrade)"
   },
   "package": {
     "_comment": "Optional, for a one-click install link later. TBD until a package version is built.",

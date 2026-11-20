@@ -84,6 +84,7 @@ which) or **Needed first** (setup stops until it's done). Never guess a value: s
 | 9 | App | read `Installed_Version__c`: not installed, older build, or current | Setup installs or upgrades it |
 | 10 | Testers and reviewers | count active standard users; who already has the `Kicksaw_UAT_App*` permission sets | Setup asks who they are |
 | 11 | Where testers test | list the org's Lightning apps; which already have New UAT Feedback | Setup adds it to the apps picked |
+| 12a | Slack alerts | `Slack_Alerts_Enabled__c`; does named credential `Kicksaw_UAT_Slack` exist and point at a real webhook (not `REPLACE_WITH_WEBHOOK_PATH`)? | Optional: setup step 5 |
 | 12 | Client AI approval | ask the person: is AI reading UAT records approved for this client? | Needed first for triage (install and feedback collection can go ahead) |
 
 Output, in this shape (plain words, one line each, worst first inside each group):
@@ -151,7 +152,7 @@ Record each fallback used in the setup report, so the next run does the same.
       configured is overwritten. Run the app's own tests (`source.testClasses`), never all the org's tests:
       ```bash
       sf project deploy validate -o <alias> --manifest manifest/uat-app.xml --test-level RunSpecifiedTests \
-        --tests UatReviewControllerTest --tests TestManagementControllerTest --tests NavigationServiceControllerTest --tests multiselectToCollection_Test --wait 30
+        --tests UatReviewControllerTest --tests TestManagementControllerTest --tests NavigationServiceControllerTest --tests multiselectToCollection_Test --tests UatSlackAlertTest --wait 30
       sf project deploy quick -o <alias> --job-id <validated id> --wait 30
       ```
       If validation fails, report the errors and stop; nothing was changed.
@@ -228,7 +229,19 @@ Record each fallback used in the setup report, so the next run does the same.
       list to keep with the project's UAT notes: the Run step's utility bar check uses it. (The settings record has
       no field for it; don't add metadata fields for this without asking.)
 4. **Load the stories:** run step 2.1.
-5. Tell the person what's left by hand: share the UAT report and dashboard
+5. **Slack alerts (optional): ask.** "Should the team get a Slack message for each new feedback item?" A message has
+   the item number (linked), type, severity, story key and submitter; never the tester's text. If yes:
+   - Ask which Slack channel, and whether the client approves a call from their org to Slack (Government Cloud and
+     health clients may need this first; record the answer).
+   - Deploy the named credential once: `sf project deploy start -o <alias> -d slack-alerts` from the release folder.
+     Never redeploy it on an upgrade (it holds the project's webhook).
+   - A Slack admin creates an incoming webhook for that channel (a Slack app with Incoming Webhooks turned on). The
+     person pastes its URL into Setup > Named Credentials > Kicksaw UAT Slack (legacy) > URL themselves. Never ask for
+     the webhook URL in chat: anyone who has it can post to the channel.
+   - Check **Slack Alerts Enabled** on the settings record (deploy the edited custom metadata file), then create one
+     test item to see the message arrive, and delete it.
+   If no: leave Slack Alerts Enabled unchecked; nothing posts. To stop alerts later, uncheck it.
+6. Tell the person what's left by hand: share the UAT report and dashboard
    folders with the testers' group, and (if wanted) create the scheduled routine (section 4).
 
 ## 2. Run (each UAT cycle, or on the Triage Schedule)

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Slack_Alerts_Enabled__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, each new UAT Feedback item posts a short message (item number, type, severity, story, submitter, link) to the Slack channel of the webhook in the named credential Kicksaw_UAT_Slack.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Posts each new feedback item to the project's Slack channel. Needs the Kicksaw_UAT_Slack named credential set to the channel's incoming webhook.</inlineHelpText>
+    <label>Slack Alerts Enabled</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -9,9 +9,15 @@
         <members>TestManagementControllerTest</members>
         <members>UatReviewController</members>
         <members>UatReviewControllerTest</members>
+        <members>UatSlackAlert</members>
+        <members>UatSlackAlertTest</members>
         <members>multiselectToCollection</members>
         <members>multiselectToCollection_Test</members>
         <name>ApexClass</name>
+    </types>
+    <types>
+        <members>UatFeedbackSlackAlert</members>
+        <name>ApexTrigger</name>
     </types>
     <types>
         <members>navigateEverywhereLFA</members>
@@ -30,6 +36,7 @@
         <members>Kicksaw_UAT_Setting__mdt.Future_Phase_Sprint_ID__c</members>
         <members>Kicksaw_UAT_Setting__mdt.Installed_Version__c</members>
         <members>Kicksaw_UAT_Setting__mdt.Instant_Runs_Enabled__c</members>
+        <members>Kicksaw_UAT_Setting__mdt.Slack_Alerts_Enabled__c</members>
         <members>Kicksaw_UAT_Setting__mdt.JIRA_ProjectID__c</members>
         <members>Kicksaw_UAT_Setting__mdt.Jira_Site__c</members>
         <members>Kicksaw_UAT_Setting__mdt.New_Test_Run_Notification_Settings__c</members>

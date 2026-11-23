@@ -27,11 +27,26 @@ private class UatSlackAlertTest {
         insert item();
         Test.stopTest();
         System.assertEquals(1, mock.calls);
-        String text = UatSlackAlert.sent[0];
-        System.assert(text.startsWith('New UAT feedback '), text);
-        System.assert(text.contains('/lightning/r/UAT_Feedback__c/'), text);
-        System.assert(text.contains('Bug, High, no story picked, submitted by '), text);
-        System.assert(!text.contains('Private tester text'), text);
+        Map<String, String> body = UatSlackAlert.sent[0];
+        System.assertEquals('🟥🟥🟥🟥🟥🟥🟥🟥', body.get('bar'));
+        String details = body.get('details');
+        System.assertEquals('Type: Bug\nPriority: High\nJira Story: none\nSubmitted By: ' + UserInfo.getName(), details);
+        System.assert(String.isNotBlank(body.get('name')), body);
+        System.assert(body.get('link').contains('/lightning/r/UAT_Feedback__c/'), body.get('link'));
+        String text = body.get('text');
+        System.assertEquals(body.get('bar') + '\nNew UAT feedback ' + body.get('name') + '\n' + details + '\n'
+            + body.get('link'), text);
+        System.assert(!text.contains('`'), text);
+        System.assert(!JSON.serialize(body).contains('Private tester text'), text);
+    }
+
+    @IsTest
+    static void barColorFollowsPriority() {
+        System.assertEquals('🟥🟥🟥🟥🟥🟥🟥🟥', UatSlackAlert.priorityBar('Blocker'));
+        System.assertEquals('🟥🟥🟥🟥🟥🟥🟥🟥', UatSlackAlert.priorityBar('High'));
+        System.assertEquals('🟧🟧🟧🟧🟧🟧🟧🟧', UatSlackAlert.priorityBar('Medium'));
+        System.assertEquals('🟩🟩🟩🟩🟩🟩🟩🟩', UatSlackAlert.priorityBar('Low'));
+        System.assertEquals('⬜⬜⬜⬜⬜⬜⬜⬜', UatSlackAlert.priorityBar(null));
     }
 
     @IsTest

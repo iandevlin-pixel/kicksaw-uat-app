@@ -230,15 +230,19 @@ Record each fallback used in the setup report, so the next run does the same.
       no field for it; don't add metadata fields for this without asking.)
 4. **Load the stories:** run step 2.1.
 5. **Slack alerts (optional): ask.** "Should the team get a Slack message for each new feedback item?" A message has
-   the item number (linked), type, severity, story key and submitter; never the tester's text. If yes:
+   a color bar for the priority, then "New UAT feedback <item number>" linked to the record, then type, priority, Jira
+   story and submitter one per line in a code block; never the tester's text. If yes:
    - Ask which Slack channel, and whether the client approves a call from their org to Slack (Government Cloud and
      health clients may need this first; record the answer).
    - Deploy the named credential once: `sf project deploy start -o <alias> -d slack-alerts` from the release folder.
      Never redeploy it on an upgrade (it holds the project's webhook).
    - Create the webhook. No Slack admin needed: in Slack, Workflow Builder > New workflow > start "From a webhook",
-     one variable `text` (Text); one step "Send a message to a channel" (the project's channel) whose message is just
-     the `text` variable; name it "Kicksaw UAT Alerts - <client>", "Workflow managers only", Publish. (A Slack app
-     incoming webhook also works, but installing an app usually needs a Slack admin.)
+     variables `text`, `bar`, `name`, `details` and `link` (all Text); one step "Send a message to a channel" (the
+     project's channel) whose message is: line 1 `{bar}`; line 2 the words `New UAT feedback` made a link with the link
+     button (Link = the `{link}` variable), a space, then `{name}`; line 3 `{details}` inside a code block (the
+     code-block button). Name it "Kicksaw UAT Alerts - <client>", "Workflow managers only", Publish. Markup sent in a
+     variable shows literally and link text can't be a variable, so the layout has to be set in the workflow. (A Slack
+     app incoming webhook also works, using `text`, but installing an app usually needs a Slack admin.)
    - The person copies the web request URL (workflow > "Starts with a webhook") and pastes it into Setup > Named
      Credentials > Kicksaw UAT Slack (legacy) > URL themselves. Never ask for the URL in chat or paste it for them:
      anyone who has it can post to the channel.

@@ -71,10 +71,11 @@ public without sharing class UatSlackAlert implements Queueable, Database.Allows
         String link = URL.getOrgDomainUrl().toExternalForm() + '/lightning/r/UAT_Feedback__c/' + item.Id + '/view';
         String story = item.Tested_Story__r != null ? item.Tested_Story__r.Jira_Key__c : null;
         String who = item.SubmittedBy__r != null ? item.SubmittedBy__r.Name : item.CreatedBy.Name;
-        String details = 'Type: ' + orNone(item.Type__c) + '\n'
-            + 'Priority: ' + orNone(item.Priority__c) + '\n'
-            + 'Jira Story: ' + orNone(story) + '\n'
-            + 'Submitted By: ' + orNone(who);
+        // Labels padded to one width so the values line up in the code block's monospace font.
+        String details = row('Type', orNone(item.Type__c)) + '\n'
+            + row('Priority', orNone(item.Priority__c)) + '\n'
+            + row('Jira Story', orNone(story)) + '\n'
+            + row('Submitted By', orNone(who));
         return payload(priorityBar(item.Priority__c), clean(item.Name), details, link);
     }
 
@@ -96,6 +97,10 @@ public without sharing class UatSlackAlert implements Queueable, Database.Allows
             when else { square = '⬜'; }
         }
         return square.repeat(8);
+    }
+
+    private static String row(String label, String value) {
+        return (label + ':').rightPad(14) + value;
     }
 
     private static String orNone(String s) {

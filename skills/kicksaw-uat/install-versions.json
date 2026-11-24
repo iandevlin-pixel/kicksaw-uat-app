@@ -2,9 +2,9 @@
   "_comment": "Where the kicksaw-uat skill installs the Kicksaw UAT App from. Standard path: deploy the source of a tagged GitHub release. Update 'latest' when a new release is tagged. The package section is optional and unused until a package version exists.",
   "app": "Kicksaw UAT App",
   "latest": {
-    "version": "0.5.3",
-    "tag": "v0.5.3",
-    "notes": "0.5.2 plus: the values in the Slack alert's details box line up (labels padded to one width). No setup change; a Workflow Builder webhook still needs the variables bar, name, details and link (see setup step 5)."
+    "version": "0.5.4",
+    "tag": "v0.5.4",
+    "notes": "0.5.3 plus: the Slack alert's details box says Severity instead of Priority (same field). No setup change; a Workflow Builder webhook still needs the variables bar, name, details and link (see setup step 5)."
   },
   "source": {
     "repo": "https://github.com/iandevlin-pixel/kicksaw-uat-app.git",

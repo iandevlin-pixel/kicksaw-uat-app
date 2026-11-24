@@ -230,7 +230,7 @@ Record each fallback used in the setup report, so the next run does the same.
       no field for it; don't add metadata fields for this without asking.)
 4. **Load the stories:** run step 2.1.
 5. **Slack alerts (optional): ask.** "Should the team get a Slack message for each new feedback item?" A message has
-   a color bar for the priority, then "New UAT feedback <item number>" linked to the record, then type, priority, Jira
+   a color bar for the priority, then "New UAT feedback <item number>" linked to the record, then type, severity, Jira
    story and submitter one per line in a code block; never the tester's text. If yes:
    - Ask which Slack channel, and whether the client approves a call from their org to Slack (Government Cloud and
      health clients may need this first; record the answer).

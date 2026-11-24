@@ -73,7 +73,7 @@ public without sharing class UatSlackAlert implements Queueable, Database.Allows
         String who = item.SubmittedBy__r != null ? item.SubmittedBy__r.Name : item.CreatedBy.Name;
         // Labels padded to one width so the values line up in the code block's monospace font.
         String details = row('Type', orNone(item.Type__c)) + '\n'
-            + row('Priority', orNone(item.Priority__c)) + '\n'
+            + row('Severity', orNone(item.Priority__c)) + '\n'
             + row('Jira Story', orNone(story)) + '\n'
             + row('Submitted By', orNone(who));
         return payload(priorityBar(item.Priority__c), clean(item.Name), details, link);

@@ -51,6 +51,7 @@ data migration): fields `Claude_Proposed_Resolution__c`, `Claude_Classification_
 external credential `Claude_UAT_Triage` (principal `Claude_Principal`); external service `ClaudeUATTriage`; flow element
 `Set_Has_Claude_Proposal`. The triage skill works from Claude Code or Codex (`AGENTS.md` / `CLAUDE.md` point to it).
 
+**Version 0.5.4 (Nov 2026):** the Slack alert's details box says **Severity** instead of Priority (it still shows the Priority field, and the color bar still follows it). No setup change.
 **Version 0.5.3 (Nov 2026):** the values in the Slack alert's details box line up: the labels (Type, Priority, Jira Story, Submitted By) are padded to one width. No setup change.
 **Version 0.5.2 (Nov 2026):** the Slack alert stands out more: a color bar for the priority (red Blocker/High, orange Medium, green Low), "New UAT feedback <number>" linked to the record, and type, priority, Jira story and submitter one per line in a code block. The webhook now sends `bar`, `name`, `details` and `link` as well as `text`; a Workflow Builder workflow lays them out (setup step 5 in the skill). A workflow that only uses `text` keeps working.
 **Version 0.5.1 (Nov 2026):** the Slack message is plain text with the record link on its own line, so a Slack Workflow Builder webhook works (no Slack admin needed to set it up).

@@ -30,7 +30,7 @@ private class UatSlackAlertTest {
         Map<String, String> body = UatSlackAlert.sent[0];
         System.assertEquals('🟥🟥🟥🟥🟥🟥🟥🟥', body.get('bar'));
         String details = body.get('details');
-        System.assertEquals('Type:         Bug\nPriority:     High\nJira Story:   none\nSubmitted By: ' + UserInfo.getName(),
+        System.assertEquals('Type:         Bug\nSeverity:     High\nJira Story:   none\nSubmitted By: ' + UserInfo.getName(),
             details);
         System.assert(String.isNotBlank(body.get('name')), body);
         System.assert(body.get('link').contains('/lightning/r/UAT_Feedback__c/'), body.get('link'));
